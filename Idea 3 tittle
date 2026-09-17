@@ -1,0 +1,16 @@
+3 judul tema yang diangkat 
+
+1.  Sistem Peminjaman Fasilitas/Ruangan Kampus
+Sistem ini memecahkan masalah birokrasi kampus yang sering kali masih manual (pakai kertas).
+Fitur Utama: Login (Admin & Mahasiswa), daftar fasilitas/ruangan yang tersedia, 
+form pengajuan peminjaman (pilih tanggal & jam), dan status approval (Menunggu/Disetujui/Ditolak).
+
+2. Sistem To do list (scheduler)
+Ini adalah website pertama saya yang berisikan untuk penjadwalan mahasiswa, to do list tugas, dan saat ini sedang tahap 
+developer ada beberapa fitur yang ditambahkan seperti ada teknik belajar agar bisa lebih efisien
+
+3. Sistem Kontrol Perangkat Lunak (Focus Mode / Website Blocker)
+ide yang masih berkaitan dengan To-Do List atau Pomodoro sebelumnya. Daripada cuma timer biasa, 
+sistem ini benar-benar "mengontrol" laptop/browser mahasiswa saat sedang belajar.
+
+
