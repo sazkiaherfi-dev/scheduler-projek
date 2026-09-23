@@ -1,0 +1,124 @@
+Build a simple full-stack web application named *Scheduler*.
+
+Purpose
+Membangun aplikasi berbasis web bernama Scheduler yang berfungsi sebagai pusat manajemen waktu, pelacak tugas/jadwal kuliah, 
+dan Ruang Belajar produktivitas mahasiswa (mengintegrasikan metode Pomodoro, Feynman Technique, dan Active Recall / Blurting Method) 
+dengan penyimpanan database mandiri.
+
+Tech Stack & Architecture
+Frontend: HTML, CSS atau Tailwind CSS dan JavaScript
+Backend: Node.js + Express (REST API)
+Database: MySQL (dijalankan via Docker Compose)
+ORM / Database Client: Prisma / Knex / MySQL2
+Authentication: Session-based / JWT Authentication (register, login, profile management)
+Main Entities & Data Models
+
+User (Pengguna)
+Id
+Name
+Email
+Password
+CreatedAt
+
+Schedule (Jadwal Mata Kuliah)
+Id
+UserId
+CourseName (Nama Mata Kuliah)
+DayOfWeek (Hari: Senin, Selasa, dll.)
+StartTime
+EndTime
+Room / Lecturer
+CreatedAt
+
+Task (Tugas Akademik)
+Id
+UserId
+ScheduleId (Opsional / Relasi ke Mata Kuliah)
+Title
+Description
+Deadline
+Status (PENDING, IN_PROGRESS, COMPLETED)
+CreatedAt
+
+StudySession (Sesi Belajar / Ruang Produktivitas)
+Id
+UserId
+TaskId (Opsional)
+MethodType (POMODORO, FEYNMAN, BLURTING)
+DurationMinutes
+Notes / Content
+CompletedAt
+
+Key Features & Requirements
+1. Onboarding & Autentikasi User
+Form Pendaftaran (Register) & Masuk (Login) dengan enkripsi password.
+
+Halaman Manajemen Profil: Pengguna dapat melihat dan memperbarui nama, email, serta password.
+
+2. Dashboard Interaktif
+Ringkasan tugas belum selesai (Pending Tasks Count).
+
+Jadwal mata kuliah terdekat hari ini / minggu ini.
+
+Aksi cepat (Quick Add Task / Quick Schedule).
+
+Grafik / Ringkasan Statistik: Total jam belajar via Pomodoro dan jumlah tugas selesai minggu ini.
+
+Notifikasi In-App (Toast Alert atau Badge) untuk tugas yang mendekati deadline (H-1).
+
+3. Manajemen Jadwal Kuliah (CRUD Schedule)
+Tambah, lihat, ubah, dan hapus jadwal mata kuliah harian.
+
+4. Pelacak Status Tugas (CRUD Task)
+Filter tugas berdasarkan Status (PENDING, IN_PROGRESS, COMPLETED), Deadline, dan Mata Kuliah.
+
+Tombol cepat untuk mengubah status tugas menjadi COMPLETED.
+
+5. Ruang Belajar / Ruang Produktivitas (Fitur Utama Baru)
+Pomodoro Timer: Timer bawaan dengan opsi interval (25 mnt fokus / 5 mnt istirahat) yang bisa dikaitkan langsung ke ID tugas tertentu.
+
+Feynman Notes: Form catatan khusus di mana mahasiswa mengetik ulang ringkasan materi dengan bahasa sederhana.
+
+Active Recall / Blurting Canvas:
+
+Area teks Blurting tempat pengguna mengetikkan seluruh ingatan materi.
+
+Fitur Hide/Show Canvas untuk membandingkan teks ingatan dengan catatan asli secara berdampingan.
+
+6. UI/UX & Responsive Requirements
+Tampilan sepenuhnya Mobile-Responsive (nyaman diakses via smartphone maupun PC).
+
+Fitur Dark Mode (Toggle Tema Terang / Gelap).
+
+Menggunakan antarmuka Bahasa Indonesia untuk semua tombol, pesan validasi, dan instruksi.
+
+Required REST API Routes
+POST /api/auth/register
+
+POST /api/auth/login
+
+GET /api/users/profile
+
+PUT /api/users/profile
+
+GET /api/schedules
+
+POST /api/schedules
+
+PUT /api/schedules/:Id
+
+DELETE /api/schedules/:Id
+
+GET /api/tasks
+
+POST /api/tasks
+
+PUT /api/tasks/:Id
+
+DELETE /api/tasks/:Id
+
+PATCH /api/tasks/:Id/complete
+
+POST /api/study-sessions
+
+GET /api/dashboard/summary
