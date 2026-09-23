@@ -19,7 +19,7 @@ Active Recall / Blurting Canvas: Area teks yang memiliki fitur hide/show. Penggu
 Statistik / Progress Tracker: Grafik sederhana di Dashboard yang menunjukkan berapa banyak tugas yang selesai minggu ini, atau berapa jam total belajar menggunakan Pomodoro timer. Ini sangat bagus untuk motivasi.
 Dark Mode: Sangat penting untuk mahasiswa yang sering mengerjakan tugas atau belajar di malam hari demi kenyamanan mata.
 Sistem Notifikasi In-App: Karena tidak ada sinkronisasi ke kalender luar atau email, buat notifikasi lokal berupa badge merah muda atau pop-up toast saat login jika ada tugas yang deadline-nya besok.
-Mobile-Responsive Design: Pastikan navigasi dan tabel-tabel di "Screenshot 2026-09-10 100258.png" bisa menyusut dan rapi saat diakses lewat smartphone
+Mobile-Responsive Design: Pastikan navigasi dan tabel-tabel  bisa menyusut dan rapi saat diakses lewat smartphone
 
 4. User Flow (Alur Pengguna)
 Onboarding & Autentikasi: Pengguna mendaftar akun baru lalu melakukan Login.
@@ -37,4 +37,4 @@ Pengguna menjalankan sesi tersebut di dalam website.
 Penyelesaian: Sesi belajar selesai, pengguna menandai status tugas menjadi Complete. Angka di Dashboard otomatis berkurang secara real-time.
 
 tools yang akan digunakan 
-html, css, javascript,
+html, css, javascript
