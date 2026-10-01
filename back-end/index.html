@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        sidebar: '#2C3E50', // Mengikuti referensi warna biru gelap awal
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 font-sans flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-sidebar text-white flex flex-col hidden md:flex">
+        <div class="p-6 text-2xl font-bold border-b border-gray-600 flex items-center gap-2">
+            📅 Scheduler
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="switchView('dashboard')" class="w-full text-left p-3 rounded hover:bg-blue-600 transition nav-btn active-nav bg-blue-600" data-target="dashboard">🏠 Dashboard</button>
+            <button onclick="switchView('jadwal')" class="w-full text-left p-3 rounded hover:bg-blue-600 transition nav-btn" data-target="jadwal">📅 Jadwal</button>
+            <button onclick="switchView('tugas')" class="w-full text-left p-3 rounded hover:bg-blue-600 transition nav-btn" data-target="tugas">📋 Tugas</button>
+            <button onclick="switchView('belajar')" class="w-full text-left p-3 rounded hover:bg-blue-600 transition nav-btn" data-target="belajar">🧠 Ruang Belajar</button>
+        </nav>
+        <div class="p-4 border-t border-gray-600">
+            <button class="w-full text-left p-3 rounded hover:bg-red-600 transition">🚪 Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <!-- Navbar -->
+        <header class="bg-white dark:bg-gray-800 shadow p-4 flex justify-between items-center sticky top-0 z-10">
+            <button class="md:hidden p-2 text-gray-600 dark:text-gray-300">☰</button>
+            <div class="flex-1"></div>
+            <div class="flex items-center gap-4">
+                <button id="themeToggle" class="p-2 bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                    🌓
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">S</div>
+                    <span class="font-medium">Hai, User</span>
+                    <span class="w-3 h-3 rounded-full bg-green-500 block"></span> <!-- Status Online -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Container Halaman -->
+        <div class="p-6 max-w-6xl mx-auto w-full">
+            
+            <!-- SECTION: DASHBOARD -->
+            <section id="view-dashboard" class="view-section block">
+                <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border-t-4 border-red-500 text-center">
+                        <h3 class="text-gray-500 dark:text-gray-400 font-bold mb-2">TUGAS BELUM SELESAI</h3>
+                        <p class="text-5xl font-bold text-gray-800 dark:text-white" id="countPending">3</p>
+                        <p class="text-sm mt-2 text-gray-500">Tugas menunggu Anda</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border-t-4 border-blue-500 text-center">
+                        <h3 class="text-gray-500 dark:text-gray-400 font-bold mb-2">JADWAL TERDEKAT</h3>
+                        <p class="text-xl font-bold text-gray-800 dark:text-white mt-4">Algoritma Lanjut</p>
+                        <p class="text-sm text-gray-500">10:00 - 12:30</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                    <h3 class="font-bold mb-4">⚡ Aksi Cepat</h3>
+                    <div class="flex gap-2">
+                        <button onclick="switchView('jadwal'); openModal('modalJadwal')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">+ Tambah Jadwal</button>
+                        <button onclick="switchView('tugas'); openModal('modalTugas')" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">+ Tambah Tugas</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: JADWAL -->
+            <section id="view-jadwal" class="view-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Daftar Jadwal Kuliah</h2>
+                    <button onclick="openModal('modalJadwal')" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">+ Tambah Jadwal</button>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="p-3">HARI</th>
+                                <th class="p-3">JAM</th>
+                                <th class="p-3">MATA KULIAH</th>
+                                <th class="p-3">RUANGAN</th>
+                                <th class="p-3">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleTableBody">
+                            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td class="p-3 font-bold">Senin</td>
+                                <td class="p-3">10:00 - 12:30</td>
+                                <td class="p-3">Algoritma Lanjut</td>
+                                <td class="p-3">Lab Komputer 1</td>
+                                <td class="p-3">
+                                    <button class="text-red-500 hover:underline">Hapus</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION: TUGAS -->
+            <section id="view-tugas" class="view-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Daftar Tugas</h2>
+                    <button onclick="openModal('modalTugas')" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">+ Tambah Tugas</button>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow overflow-x-auto">
+                    <div class="flex gap-2 mb-4">
+                        <select class="border p-2 rounded dark:bg-gray-700 dark:border-gray-600"><option>Semua Status</option><option>Pending</option><option>Selesai</option></select>
+                        <select class="border p-2 rounded dark:bg-gray-700 dark:border-gray-600"><option>Semua Deadline</option></select>
+                        <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded dark:bg-gray-700 dark:text-white">Reset</button>
+                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="p-3">MATA PELAJARAN</th>
+                                <th class="p-3">NAMA TUGAS</th>
+                                <th class="p-3">STATUS</th>
+                                <th class="p-3">DEADLINE</th>
+                                <th class="p-3">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskTableBody">
+                            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td class="p-3">Algoritma</td>
+                                <td class="p-3">Buat Flowchart CRUD</td>
+                                <td class="p-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-bold">PENDING</span></td>
+                                <td class="p-3">15 Okt 2026</td>
+                                <td class="p-3"><button class="text-blue-500 hover:underline">Selesai</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION: RUANG BELAJAR -->
+            <section id="view-belajar" class="view-section hidden">
+                <h2 class="text-2xl font-bold mb-6">Ruang Produktivitas</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Pomodoro Timer -->
+                    <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow text-center">
+                        <h3 class="text-xl font-bold mb-2">Pomodoro Timer</h3>
+                        <p class="text-gray-500 mb-6">Fokus pada tugas, abaikan distraksi.</p>
+                        <div class="text-7xl font-bold mb-8 text-blue-600 dark:text-blue-400" id="timeDisplay">25:00</div>
+                        <div class="flex justify-center gap-4">
+                            <button id="btnStart" class="bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600">Mulai</button>
+                            <button id="btnPause" class="bg-yellow-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-yellow-600">Jeda</button>
+                            <button id="btnReset" class="bg-red-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-600">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Blurting / Feynman Canvas -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Blurting / Feynman Canvas</h3>
+                            <select class="border p-1 rounded dark:bg-gray-700 text-sm">
+                                <option>Mode Blurting</option>
+                                <option>Mode Feynman</option>
+                            </select>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-2">Tuliskan semua yang kamu ingat dengan bahasamu sendiri tanpa melihat catatan.</p>
+                        <textarea class="w-full flex-1 p-4 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Mulai mengetik di sini..."></textarea>
+                        <div class="mt-4 flex justify-end">
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan Sesi</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL TAMBAH TUGAS -->
+    <div id="modalTugas" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Tambah Tugas Baru</h3>
+            <form id="formTambahTugas" class="space-y-4">
+                <div>
+                    <label class="block text-sm mb-1">Mata Kuliah (Opsional)</label>
+                    <input type="text" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: Algoritma">
+                </div>
+                <div>
+                    <label class="block text-sm mb-1">Judul Tugas</label>
+                    <input type="text" required class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: Buat ERD Database">
+                </div>
+                <div>
+                    <label class="block text-sm mb-1">Deadline</label>
+                    <input type="date" required class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
+                </div>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" onclick="closeModal('modalTugas')" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Simpan Tugas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH JADWAL -->
+   <!-- MODAL TAMBAH JADWAL -->
+    <div id="modalJadwal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Tambah Jadwal Kuliah</h3>
+            <form id="formTambahJadwal" class="space-y-4">
+                <div>
+                    <label class="block text-sm mb-1">Mata Pelajaran</label>
+                    <input type="text" id="inputMatkul" required class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm mb-1">Hari</label>
+                        <select id="inputHari" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
+                            <option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-1">Catatan / Ruangan</label>
+                        <input type="text" id="inputCatatan" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm mb-1">Jam Mulai</label>
+                        <input type="time" id="inputJamMulai" required class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-1">Jam Selesai</label>
+                        <input type="time" id="inputJamSelesai" required class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" onclick="closeModal('modalJadwal')" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Simpan Jadwal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Memuat Script Utama -->
+    <script src="js/ui.js"></script>
+    <script src="js/timer.js"></script>
+</body>
+</html>
