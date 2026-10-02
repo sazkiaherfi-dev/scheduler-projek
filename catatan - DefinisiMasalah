@@ -1,0 +1,123 @@
+Definisi Masalah dan Ruang Lingkup Proyek
+**Tema:** Manajemen Waktu dan Produktivitas Akademik Mahasiswa
+**Aplikasi:** Web Scheduler App
+
+**1. Deskripsi Masalah**
+Mahasiswa yang menjalani perkuliahan, terutama yang aktif berorganisasi atau bekerja paruh waktu, biasanya dihadapkan pada jadwal yang padat setiap minggunya. Waktu yang ada harus dibagi untuk menghadiri kelas, mengerjakan tugas, belajar mandiri, dan beristirahat. Masalah yang sering muncul:
+
+1. Jadwal dan tugas tidak tercatat terpusat. Informasi tersebar di grup chat, catatan kertas, atau ingatan saja, sehingga mahasiswa sering melewatkan tenggat waktu (*deadline*).
+2. Tidak ada alokasi waktu belajar yang jelas. Waktu luang sering terbuang karena tidak ada target jam belajar spesifik per mata kuliah, sehingga sistem belajar yang digunakan adalah Sistem Kebut Semalam (SKS).
+3. Baru sadar saat *deadline* sudah dekat. Mahasiswa baru merasa kewalahan ketika banyak tugas menumpuk dan harus dikumpulkan esok harinya.
+4. Tidak tahu berapa lama harus belajar hari ini. Mengetahui ada ujian minggu depan belum cukup membantu keputusan harian. Menargetkan belajar 10 jam seminggu terasa abstrak jika tidak dipecah menjadi target harian.
+
+Aplikasi kalender bawaan umumnya hanya menampilkan jadwal statis. Masalah 3 dan 4 belum terjawab secara langsung, terutama dalam bentuk panduan target belajar harian yang dinamis dan mudah dipahami.
+
+**Rumusan masalah:** Bagaimana membantu mahasiswa mencatat jadwal dan tugasnya, memantau tenggat waktu, dan mengetahui target jam belajar harian yang ideal sampai akhir minggu?
+
+**2. Profil Target Pengguna**
+
+| Aspek | Keterangan |
+| --- | --- |
+| Pengguna utama | Mahasiswa aktif yang mengikuti perkuliahan dan memiliki beban tugas akademik |
+| Kondisi | Sibuk dengan jadwal kuliah, praktikum, dan harus mengelola waktu belajar mandiri |
+| Usia | Sekitar 18 sampai 24 tahun |
+| Kemampuan teknis | Terbiasa memakai *browser* dan aplikasi web di ponsel atau laptop |
+| Pengalaman manajemen waktu | Pemula, terbiasa menunda pekerjaan (*procrastination*) atau belajar tanpa jadwal |
+| Kebutuhan | Pencatatan cepat, pengingat visual yang jelas, dan angka target harian yang langsung dipahami |
+| Kendala | Waktu terbatas, malas mencatat jika prosesnya rumit |
+
+*Jumlah aktor hanya satu, yaitu mahasiswa (user). Tidak ada admin atau peran lain.*
+
+**3. Manfaat Aplikasi**
+
+1. **Kesadaran waktu:** semua jadwal kelas dan tugas tercatat rapi per minggu.
+2. **Pengendalian tugas:** tugas dipantau berdasarkan tenggat waktu sehingga tidak menumpuk di akhir.
+3. **Peringatan dini:** sistem memberi penanda visual saat tenggat waktu tugas mendekati 24 jam atau kurang.
+4. **Panduan belajar harian (manfaat utama):** fitur *Daily Study Target* menghitung batas jam belajar yang harus diselesaikan per hari berdasarkan sisa target mingguan dan sisa hari.
+5. **Evaluasi mingguan:** laporan per minggu membantu mahasiswa melihat tingkat penyelesaian tugas dan pencapaian target belajar.
+6. **Kebiasaan akademik yang sehat:** membiasakan mahasiswa merencanakan waktu dan mencicil pekerjaan sejak dini.
+
+*Daily Study Target = Sisa Target Jam Belajar / Sisa Hari*
+Contoh: target belajar mingguan 10 jam, sudah belajar 4 jam (sisa 6 jam), dan sisa hari dalam minggu ini ada 3 hari, maka target belajar hari ini adalah 2 jam.
+
+**4. Daftar Fitur Inti**
+Fitur di bawah ini dipilih karena bisa diselesaikan dalam sekitar 12 pertemuan.
+
+| No | Fitur | Deskripsi Singkat | Prioritas |
+| --- | --- | --- | --- |
+| 1 | Register dan Login | Akun dengan *password* ter-*hash* dan autentikasi JWT | Wajib |
+| 2 | Kategori Kegiatan | Kategori bawaan: Kelas, Praktikum, Tugas Mandiri, Ujian, Lainnya | Wajib |
+| 3 | Pencatatan Jadwal | Tambah, ubah, hapus, dan lihat jadwal kuliah mingguan | Wajib |
+| 4 | Pencatatan Tugas | Tambah, ubah, hapus, dan lihat daftar tugas beserta tenggat waktu (*deadline*) | Wajib |
+| 5 | Pengaturan Target Belajar | Target jam belajar mingguan untuk mata kuliah/topik tertentu | Wajib |
+| 6 | Pemantauan Tugas | Persentase penyelesaian, *progress bar*, dan status tugas (*Belum*, *Proses*, *Selesai*) | Wajib |
+| 7 | Peringatan *Deadline* | *Alert* atau warna merah saat *deadline* tersisa kurang dari 24 jam | Wajib |
+| 8 | Daily Study Target | Target jam belajar harian dari sisa target dan sisa hari, termasuk penanganan kasus khusus | Wajib (fitur pembeda) |
+| 9 | Dashboard | Ringkasan jadwal hari ini, tugas mendesak, total target belajar, dan sisa target | Wajib |
+| 10 | Laporan Mingguan | Ringkasan per minggu, tugas yang selesai, dan satu *bar chart* sederhana | Wajib |
+| 11 | Pengujian | *Unit test* perhitungan target dan API test dasar | Wajib |
+| 12 | Dokumentasi | README, spesifikasi, dan dokumen pendukung | Wajib |
+
+**Contoh rencana per fase:**
+
+* **Pertemuan 1–2:** Analisis kebutuhan, definisi masalah, desain database
+* **Pertemuan 3–4:** *Setup* proyek (Node.js/Express, SQLite), database, dan autentikasi
+* **Pertemuan 5–7:** CRUD jadwal kuliah, tugas, dan target belajar
+* **Pertemuan 8–9:** Perhitungan status *deadline* dan *Daily Study Target*
+* **Pertemuan 10:** Dashboard dan laporan mingguan
+* **Pertemuan 11:** Pengujian dan perbaikan *bug*
+* **Pertemuan 12:** Dokumentasi, finalisasi, dan presentasi
+
+**5. Fitur yang Tidak Dikerjakan**
+Fitur berikut sengaja tidak dikerjakan agar proyek tetap fokus dan selesai tepat waktu:
+
+* Integrasi otomatis dengan kalender eksternal (Google Calendar, Outlook)
+* Notifikasi di luar aplikasi (WhatsApp, email, *push notification*)
+* Fitur kolaborasi atau berbagi jadwal antar mahasiswa
+* Sistem absensi kehadiran kelas
+* Prediksi produktivitas berbasis AI
+* Sinkronisasi *multi-device* secara *real-time*
+* Fitur sosial dan gamifikasi kompleks (poin, *leaderboard*)
+* Peran admin kampus dan manajemen organisasi
+* Aplikasi *mobile native*
+
+**6. Kriteria Aplikasi Dinyatakan Berhasil**
+Aplikasi dinyatakan berhasil jika seluruh kriteria berikut terpenuhi.
+
+**A. Fungsional**
+
+| No | Kriteria |
+| --- | --- |
+| 1 | Pengguna dapat *register*, *login*, dan *logout*. Halaman terlindungi tidak bisa dibuka tanpa *login*. |
+| 2 | Pengguna dapat menambah, mengubah, menghapus, dan melihat jadwal, tugas, dan target belajar. |
+| 3 | *Dashboard* otomatis ter-*update* setelah ada perubahan jadwal, penyelesaian tugas, atau pencatatan jam belajar. |
+| 4 | Status tugas dan *deadline* tampil sesuai aturan: Lebih dari 3 hari (Aman), 1–3 hari (Perlu Perhatian), Kurang dari 24 Jam (Mendekati Batas/Kritis), dan Terlewat. |
+| 5 | Peringatan visual muncul saat tugas mendekati batas kurang dari 24 jam. |
+| 6 | *Daily Study Target* benar untuk contoh baku: target 10 jam, sudah dicapai 4 jam, sisa 3 hari, hasil 2 jam per hari. |
+| 7 | Kasus khusus tertangani tanpa *error*: target belum dibuat, target sudah tercapai penuh, tenggat waktu berakhir (tanpa pembagian dengan nol). |
+| 8 | Laporan mingguan hanya memuat data minggu yang dipilih. |
+
+**B. Kualitas dan Keamanan**
+
+| No | Kriteria |
+| --- | --- |
+| 9 | *Password* tersimpan dalam bentuk *hash*, bukan teks asli. |
+| 10 | Pengguna hanya dapat mengakses jadwal dan tugasnya sendiri. |
+| 11 | Validasi dilakukan di *backend* (durasi jam lebih dari 0, format tanggal valid, *deadline* logis). |
+| 12 | Pesan *error* mudah dipahami pengguna dan seluruh antarmuka berbahasa Indonesia. |
+
+**C. Teknis dan Dokumentasi**
+
+| No | Kriteria |
+| --- | --- |
+| 13 | Seluruh *unit test* perhitungan target dan *API test* lulus. |
+| 14 | Aplikasi dapat di-*build* dan dijalankan dari nol mengikuti README (instalasi, sinkronisasi Prisma/SQLite, *start*). |
+| 15 | README, spesifikasi, dan dokumen pendukung lengkap. |
+| 16 | Aplikasi dapat didemonstrasikan dengan alur: *Register*, *Login*, Input Jadwal, Atur Target Belajar, Input Tugas, Peringatan *Deadline*, *Daily Study Target*, Laporan Mingguan. |
+
+**D. Skenario Uji Penerimaan (untuk demo)**
+
+1. Mahasiswa mencatat jadwal kuliah hari ini.
+2. Mahasiswa mengatur target belajar Pemrograman Web: 8 jam per minggu.
+3. Mahasiswa mencatat jam belajar yang sudah dilakukan sebesar 3.5 jam. Sisa hari dalam minggu ini adalah 3 hari.
+4. Hasil yang diharapkan: *Dashboard* menunjukkan sisa target belajar 4.5 jam, dan fitur *Daily Study Target* langsung menampilkan angka 1.5 jam sebagai batas minimum belajar harian yang harus dipenuhi mahasiswa tersebut hari ini.
