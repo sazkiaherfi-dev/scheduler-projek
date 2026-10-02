@@ -1,0 +1,282 @@
+Aplikasi web full-stack sederhana bernama Web Scheduler App.
+
+**Tujuan:** Membantu mahasiswa mengatur waktu akademik mingguan. Mahasiswa mencatat jadwal kuliah, 
+  mengelola daftar tugas (*tasks*) beserta tenggat waktu, menentukan target jam belajar (*study target*) per kategori untuk setiap minggu, memantau *progress* 
+  penyelesaian tugas, dan melihat *Daily Study Target* yang menunjukkan berapa jam yang idealnya harus dialokasikan untuk belajar per hari sampai akhir minggu. 
+  Aplikasi ini adalah proyek mata kuliah Rekayasa Perangkat Lunak (RPL), sehingga kode harus tetap sederhana, mudah dibaca, dan mudah dijelaskan.
+
+**Gunakan stack berikut:**
+
+* Frontend: React + TypeScript + Vite + Tailwind CSS
+* Backend: Node.js + TypeScript + Express
+* Database: MySQL
+* ORM: Prisma
+* Gaya API: REST API
+* Autentikasi: JWT (jsonwebtoken) dengan password hashing (bcrypt)
+* Validasi: Zod (validasi request di backend)
+* Testing: Vitest (unit test service perhitungan dan API test di backend)
+* Chart: Chart.js dengan react-chartjs-2 (hanya untuk laporan mingguan)
+* Gunakan Docker Compose untuk MySQL
+* Gunakan `.env.example` untuk URL database dan JWT secret
+
+**Aturan kode:**
+
+* Jangan menambahkan komentar kecuali benar-benar perlu. Komentar hanya diperbolehkan untuk aturan *Daily Study Target* dan perhitungan *Deadline*.
+* Gunakan PascalCase untuk semua class, type, interface, enum, komponen React, model database, DTO API, dan nama properti JSON.
+* Variabel lokal boleh menggunakan camelCase.
+* Usahakan panjang baris kode kurang dari 150 karakter.
+* Gunakan struktur folder yang bersih dan sederhana.
+* Jangan over-engineering. Tanpa microservices, tanpa design pattern rumit, tanpa lapisan abstraksi yang tidak perlu.
+
+**Entitas utama:**
+
+1. **User**
+
+* Id
+* Name
+* Email (unik)
+* PasswordHash
+* CreatedAt
+
+2. **Category** (master data global, tidak dimiliki oleh user tertentu)
+
+* Id
+* Name (unik)
+
+3. **Schedule** (Jadwal Kelas/Kegiatan rutin)
+
+* Id
+* UserId
+* CategoryId
+* Title
+* DayOfWeek (1-7, Senin-Minggu)
+* StartTime
+* EndTime
+* Room
+* CreatedAt
+
+4. **Task** (Tugas dengan tenggat waktu)
+
+* Id
+* UserId
+* CategoryId
+* Title
+* Deadline (DateTime)
+* Status (TODO, IN_PROGRESS, DONE)
+* CreatedAt
+
+5. **StudyTarget** (Target jam belajar)
+
+* Id
+* UserId
+* CategoryId
+* TargetHours
+* WeekNumber (1-52)
+* Year
+* CreatedAt
+
+6. **StudySession** (Pencatatan realisasi jam belajar)
+
+* Id
+* UserId
+* CategoryId
+* DurationHours
+* Date
+* Description
+* CreatedAt
+
+**Relasi:**
+
+* User 1:N Schedule, User 1:N Task, User 1:N StudyTarget, User 1:N StudySession
+* Category 1:N Schedule, Category 1:N Task, Category 1:N StudyTarget, Category 1:N StudySession
+
+**Aturan database:**
+
+* Simpan semua nilai durasi jam (*TargetHours*, *DurationHours*) sebagai Prisma Decimal (`@db.Decimal(5, 2)`), jangan memakai Float.
+* StudyTarget harus unik berdasarkan UserId, CategoryId, WeekNumber, dan Year.
+* Jangan menyimpan nilai turunan (sisa jam belajar, persentase penyelesaian, target harian). Selalu hitung dari data mentah.
+* Setiap query pada Schedule, Task, StudyTarget, dan StudySession harus difilter berdasarkan UserId milik user yang sedang login.
+* User tidak boleh dapat membaca, mengubah, atau menghapus data milik user lain. Kembalikan 404 untuk data yang bukan miliknya.
+* Query berbasis periode harus memakai rentang minggu (WeekNumber) yang akurat.
+* Category yang masih dipakai oleh jadwal, tugas, atau target belajar tidak boleh dihapus.
+* Gunakan Prisma migration dan seed kategori default: Kelas, Praktikum, Tugas Mandiri, Ujian, Lainnya. Opsional: seed satu user demo beserta data awal.
+
+**Fitur backend:**
+
+1. **Autentikasi**
+
+* Register dengan Name, Email, Password. Email harus valid dan belum digunakan. Password minimal 8 karakter.
+* Login dengan Email dan Password, mengembalikan JWT.
+* Mengambil data user yang sedang login.
+* Middleware autentikasi melindungi semua route kecuali register dan login.
+
+2. **CRUD Category**
+
+* Lihat daftar, tambah, ubah, hapus.
+
+3. **CRUD Schedule**
+
+* Lihat daftar, detail, tambah, ubah, hapus. DayOfWeek harus 1-7.
+
+4. **CRUD Task**
+
+* Lihat daftar (filter opsional rentang tanggal atau status), detail, tambah, ubah, hapus.
+* Deadline harus valid. CategoryId harus ada.
+
+5. **CRUD StudyTarget**
+
+* Lihat daftar (filter opsional WeekNumber dan Year), detail, tambah, ubah, hapus.
+* TargetHours harus lebih dari 0. WeekNumber harus 1 sampai 52.
+* StudyTarget ganda untuk kategori dan periode minggu yang sama mengembalikan 400 dengan pesan yang jelas.
+
+6. **CRUD StudySession**
+
+* Lihat daftar, detail, tambah, ubah, hapus.
+* DurationHours harus lebih dari 0. Date harus valid.
+
+7. **Service perhitungan target belajar (satu tempat)**
+
+* TotalTargetHours, TotalStudiedHours
+* RemainingTarget = TargetHours - TotalStudiedHours
+* ProgressPercentage = TotalStudiedHours / TargetHours * 100
+* Semua perhitungan dibatasi pada WeekNumber dan Year yang dipilih. Default-nya adalah minggu berjalan saat ini.
+
+8. **Aturan status Tugas (Deadline)**
+
+* SAFE: Sisa waktu lebih dari 3 hari
+* WARNING: Sisa waktu dari 1 sampai 3 hari
+* NEAR_LIMIT: Sisa waktu kurang dari 24 jam
+* OVERDUE: Waktu sekarang sudah melewati Deadline
+* Label Indonesia: Aman, Perlu Perhatian, Kritis (Mendekati Batas), Terlambat.
+
+9. **Daily Study Target (fitur utama)**
+
+* RemainingDays termasuk hari ini: Hari terakhir minggu (Minggu) - Hari ini + 1.
+* Jika periode yang dipilih adalah minggu yang sudah lewat: RemainingDays = 0.
+* DailyTarget = RemainingTarget / RemainingDays, dibulatkan ke dua angka desimal.
+* Hitung per kategori dan untuk total seluruh target.
+* Jangan pernah membagi dengan nol.
+* Evaluasi pesan dengan urutan berikut:
+1. Tidak ada target: DailyTarget 0, Status NO_TARGET, "Target belajar belum diatur untuk kategori ini."
+2. RemainingDays sama dengan 0: DailyTarget 0, Status WEEK_ENDED, "Periode minggu ini telah berakhir."
+3. Sudah belajar melebihi target: DailyTarget 0, Status TARGET_EXCEEDED, "Kamu sudah belajar melebihi target mingguan!"
+4. Sisa target sama dengan 0: DailyTarget 0, Status TARGET_ACHIEVED, "Target belajar mingguan sudah tercapai."
+5. Selain itu: Status NORMAL, DailyTarget = RemainingTarget / RemainingDays.
+
+
+* Contoh: Target 10 jam, Sudah dicapai 4 jam, Sisa 6 jam, RemainingDays 3 hari, DailyTarget 2 jam.
+
+10. **Dashboard API**
+
+* Summary: TotalTasks, CompletedTasks, TotalTargetHours, TotalStudiedHours.
+* UpcomingSchedules: Jadwal untuk hari ini.
+* UrgentTasks: Tugas dengan status NEAR_LIMIT atau OVERDUE.
+* Daily limit: Total dan per kategori dengan DailyTarget, RemainingTarget, RemainingDays, Status, Message.
+
+11. **Weekly Report API**
+
+* Input: WeekNumber dan Year.
+* Mengembalikan TotalTargetHours, TotalStudiedHours, daftar penyelesaian tugas, dan StudiedHoursByCategory.
+
+**Halaman frontend:**
+
+1. **Register dan Login**
+
+* Form sederhana dengan validasi. Setelah login, arahkan ke Dashboard.
+* Simpan JWT di localStorage dan kirim sebagai Bearer token pada setiap request.
+
+2. **Dashboard**
+
+* Kartu ringkasan: Jadwal Hari Ini, Tugas Aktif, Total Target Belajar, Jam Dicapai.
+* Kartu *Daily Study Target*, contohnya "2 Jam / hari", dengan keterangan batas minimum belajar harian yang disarankan.
+* Kotak peringatan (*alert*) untuk setiap tugas dengan status *Mendekati Batas* atau *Terlambat*.
+* *Progress bar* target belajar per kategori.
+
+3. **Manajemen Jadwal (*Schedule*)**
+
+* Tabel: Hari, Jam Mulai, Jam Selesai, Mata Kuliah/Kategori, Ruang, Aksi.
+
+4. **Manajemen Tugas (*Tasks*)**
+
+* Tabel: Tenggat Waktu (*Deadline*), Judul, Kategori, Status (*Belum, Proses, Selesai*), Aksi.
+* *Badge* warna untuk status *deadline*.
+
+5. **Manajemen Target & Sesi Belajar**
+
+* Tabel penentuan target mingguan.
+* Form pencatatan realisasi sesi belajar (*Study Session*).
+
+6. **Laporan Mingguan**
+
+* Pemilih minggu dan tahun.
+* Grafik *bar chart* sederhana untuk menunjukkan jam belajar per hari dalam minggu tersebut.
+
+**Kebutuhan UI:**
+
+* Gunakan bahasa Indonesia untuk semua label, tombol, pesan, dan validasi.
+* Buat layout yang bersih, sederhana, dan responsif dengan *sidebar*: Dashboard, Jadwal, Tugas, Target Belajar, Laporan, Logout.
+* Tampilkan pesan *error* yang ramah.
+* Warna *badge* status deadline: Aman (hijau), Perlu Perhatian (kuning), Kritis/Mendekati Batas (oranye), Terlambat (merah).
+
+**Format response API (semua response):**
+
+* Sukses: `{ "Success": true, "Message": "...", "Data": {} }`
+* Error: `{ "Success": false, "Message": "..." }`
+* Gunakan *error handler* terpusat.
+
+**Route API yang wajib ada:**
+
+* POST `/api/auth/register`
+* POST `/api/auth/login`
+* GET `/api/auth/me`
+* GET, POST, PUT, DELETE `/api/categories`
+* GET, POST, PUT, DELETE `/api/schedules`
+* GET, POST, PUT, DELETE `/api/tasks`
+* GET, POST, PUT, DELETE `/api/study-targets`
+* GET, POST, PUT, DELETE `/api/study-sessions`
+* GET `/api/dashboard/summary?WeekNumber=&Year=`
+* GET `/api/dashboard/urgent-tasks`
+* GET `/api/dashboard/daily-target?WeekNumber=&Year=`
+* GET `/api/reports/weekly?WeekNumber=&Year=`
+
+**Testing:**
+
+* Gunakan Vitest untuk *backend*.
+* *Unit test* untuk service perhitungan: Sisa Jam Belajar, Persentase, Status Deadline, dan *Daily Study Target* (termasuk kasus target belum diset, periode berakhir, dan target tercapai).
+* *API test*: CRUD, filter *user isolation*, dan validasi duplikat target.
+* Buat tanggal saat ini dapat di-*inject* pada service agar tes konsisten.
+
+**Jangan menambahkan:**
+
+* Integrasi kalender eksternal, notifikasi email/WA, sistem absensi kampus, kolaborasi tim, gamifikasi kompleks, prediksi AI, atau aplikasi *mobile native*.
+
+**Deliverables:**
+
+* *Source code frontend* dan *backend* yang lengkap.
+* Prisma schema, migration, dan seed data.
+* File `docker-compose.yml` untuk MySQL.
+* `.env.example`.
+* `README.md` (Deskripsi proyek, *tech stack*, struktur, penjelasan *Daily Study Target*, instruksi *build*, *testing*, dan batasan proyek).
+* Pastikan aplikasi sukses di-*build* dan *dashboard* ter-*update* otomatis saat ada perubahan tugas atau sesi belajar.
+
+**Struktur proyek (Monorepo):**
+
+```text
+web-scheduler-app/
+  apps/
+    web/
+    api/
+  packages/
+    shared/
+
+```
+
+**Kebutuhan package shared (`@web-scheduler/shared`):**
+
+* Simpan model domain bersama, enum, tipe *response*, dan konstanta.
+* Frontend dan backend wajib mengimpor dari *package* ini (jangan menduplikasi model).
+* Contoh struktur:
+* `models/` (User, Category, Schedule, Task, StudyTarget, StudySession)
+* `enums/` (TaskStatus, DeadlineStatus, DailyTargetStatus)
+* `dto/` (ApiResponse, AuthResponse, DashboardSummary, DailyTargetResponse, WeeklyReport)
+* `constants/` (DeadlineThresholds)
