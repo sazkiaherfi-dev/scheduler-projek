@@ -1,0 +1,35 @@
+# Laporan Pengembangan MVP Version 1 (Web Scheduler App)
+
+Laporan ini mendokumentasikan proses pengembangan MVP aplikasi Web Scheduler secara iteratif menggunakan bantuan AI Agent, dengan fokus pada dua fitur inti.
+
+## Fitur 1: Manajemen Tugas (CRUD Tasks) & Tenggat Waktu
+
+**1. Apa yang dikerjakan AI Agent:**
+AI Agent ditugaskan untuk merancang kerangka *backend* manajemen tugas. Instruksi (*brief*) yang diberikan meliputi pembuatan skema *database* menggunakan Prisma (untuk menyimpan judul tugas dan tenggat waktu/ *deadline*) serta pembuatan *route* API Express.js untuk menambahkan (POST) dan mengambil (GET) data tugas.
+
+**2. Apa yang direview dan diubah oleh mahasiswa:**
+Saya mereview struktur *file* yang dihasilkan AI untuk memastikan kesesuaiannya dengan arsitektur proyek (pemisahan folder `routes` dan konfigurasi *database*). Saya juga memodifikasi bagian skema Prisma untuk memastikan tipe data `DateTime` menangani zona waktu dengan benar, serta mendaftarkan *route* baru tersebut secara manual ke dalam *file* utama `index.js`.
+
+**3. Bagaimana fitur diverifikasi:**
+Fitur diverifikasi dengan menjalankan server lokal (`node index.js`) dan melakukan migrasi *database* SQLite menggunakan perintah `npx prisma db push`. Pengujian dilakukan dengan mengirimkan *request* penambahan data tugas melalui Postman dan memverifikasi bahwa respons *server* mengembalikan status kode 201 (Created) beserta data JSON yang tersimpan di *database*.
+*(Catatan: Lampirkan screenshot terminal POST/GET atau tampilan database browser di sini)*
+
+**4. Mengapa perubahan tersebut diperlukan:**
+Perubahan manual diperlukan karena AI Agent tidak mengenali konfigurasi *server* lokal secara penuh. Kode dari AI bersifat terisolasi, sehingga perlu disesuaikan (*routing integration*) agar dapat berjalan di atas *server* Express yang sudah ada tanpa menimpa *endpoint* penjadwalan (*schedules*) sebelumnya.
+
+---
+
+## Fitur 2: Kalkulasi Daily Study Target (Batas Belajar Harian)
+
+**1. Apa yang dikerjakan AI Agent:**
+AI Agent diinstruksikan untuk membuat *service* logika matematika yang menghitung target jam belajar harian. AI membuat fungsi yang membagi sisa target jam belajar mingguan dengan sisa hari dalam minggu tersebut, beserta pembuatan kerangka *unit test* untuk memvalidasi fungsi tersebut menggunakan *framework testing*.
+
+**2. Apa yang direview dan diubah oleh mahasiswa:**
+Saya meninjau logika pembagian matematika yang dibuat oleh AI untuk mencegah *error* pembagian dengan nol (*divide by zero*). Saya menambahkan validasi manual (kasus khusus) jika sisa hari sama dengan nol (hari Minggu) atau jika mahasiswa sudah mencapai target belajar, agar fungsi tidak mengembalikan nilai *Infinity* atau *NaN*, melainkan mengembalikan *string* status yang mudah dibaca UI.
+
+**3. Bagaimana fitur diverifikasi:**
+Verifikasi dilakukan secara otomatis melalui *unit test*. Saya mengeksekusi *test runner* di terminal untuk menjalankan skenario kalkulasi (contoh: target 10 jam, sudah tercapai 4 jam, sisa 3 hari = 2 jam/hari). Output terminal harus menunjukkan status *PASS* warna hijau tanpa ada *error* kompilasi.
+*(Catatan: Lampirkan screenshot terminal hasil Unit Test berwarna hijau di sini)*
+
+**4. Mengapa perubahan tersebut diperlukan:**
+AI cenderung membuat fungsi perhitungan dasar yang kaku. Penambahan kondisi *edge cases* (seperti hari terakhir dalam minggu atau target terlampaui) mutlak diperlukan untuk mencegah *crash* pada aplikasi dan memastikan *output* yang diberikan relevan dengan logika bisnis aplikasi Web Scheduler.

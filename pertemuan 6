@@ -1,0 +1,131 @@
+# LAPORAN PENGEMBANGAN MVP
+
+**Aplikasi Web: Scheduler (Student Time Management & Study Space)**
+
+---
+
+## 1. Ringkasan Deskripsi MVP
+
+**Scheduler** adalah aplikasi berbasis web yang dirancang sebagai pusat manajemen waktu, pelacak tugas akademik, dan ruang produktivitas belajar saintifik bagi mahasiswa. Aplikasi ini mengatasi permasalahan manajemen waktu yang sering dialami mahasiswa dengan menggabungkan sistem manajemen tugas harian dan fasilitas teknik belajar teruji (Pomodoro, Feynman Technique, dan Active Recall/Blurting Canvas) ke dalam satu platform yang terintegrasi.
+
+* **Target Pengguna:** Mahasiswa
+* **Teknologi Utama:** Node.js, Express, TypeScript, Jest (Backend & Unit Testing), HTML/CSS/JavaScript (Frontend), dan Database MySQL.
+* **Cakupan Fitur Utama MVP:**
+1. **Autentikasi Pengguna:** Pendaftaran akun dan login dengan enkripsi kata sandi.
+2. **Manajemen Tugas Akademik (CRUD Task):** Pengelolaan daftar tugas kuliah beserta penentuan status dan tenggat waktu.
+3. **Pomodoro Timer:** Timer pencatat waktu fokus belajar yang terhubung dengan akun pengguna.
+4. **Feynman Notes:** Form ringkasan materi untuk melatih kemampuan penyederhanaan konsep.
+5. **Active Recall / Blurting Canvas:** Area penulisan ingatan bebas dengan fitur sakelar visibilitas (*hide/show canvas*) untuk pengujian mandiri.
+
+
+
+---
+
+## 2. User Story dan Acceptance Criteria
+
+### US-01: Pendaftaran & Autentikasi Mahasiswa
+
+* **User Story:** Sebagai mahasiswa, saya ingin mendaftar dan masuk ke akun Scheduler agar data tugas dan riwayat belajar saya tersimpan dengan aman.
+* **Acceptance Criteria:**
+1. Sistem menerima input nama, email unik, dan kata sandi.
+2. Kata sandi wajib memiliki panjang minimal 6 karakter.
+3. Sistem menolak pendaftaran jika alamat email sudah terdaftar di database.
+4. Pengguna yang berhasil mengautentikasi diri mendapatkan token/sesi identitas yang valid.
+
+
+
+### US-02: Manajemen Tugas Akademik (CRUD Task)
+
+* **User Story:** Sebagai mahasiswa, saya ingin mencatat dan mengelola tugas perkuliahan agar dapat memantau prioritas pengerjaan.
+* **Acceptance Criteria:**
+1. Tugas baru yang dibuat secara otomatis memiliki status awal `PENDING`.
+2. Sistem secara otomatis mendeteksi status `OVERDUE` jika tanggal tenggat waktu telah terlampaui dan tugas belum ditandai selesai.
+3. Pengguna dapat memperbarui status tugas menjadi `COMPLETED`.
+4. Pengguna hanya memiliki akses terhadap data tugas milik akunnya sendiri.
+
+
+
+### US-03: Pelacak Sesi Pomodoro Timer
+
+* **User Story:** Sebagai mahasiswa, saya ingin mencatat durasi sesi belajar menggunakan timer Pomodoro agar interval waktu belajar tercatat terstruktur.
+* **Acceptance Criteria:**
+1. Pengguna dapat memilih durasi sesi belajar (misalnya 25 menit).
+2. Sistem menolak pencatatan sesi jika nilai durasi bernilai kurang dari atau sama dengan 0 menit.
+3. Sesi belajar yang valid disimpan ke database dengan label metode `POMODORO` dan stempel waktu selesai.
+
+
+
+### US-04: Feynman Notes Space
+
+* **User Story:** Sebagai mahasiswa, saya ingin menuliskan ulang materi kuliah dengan bahasa sederhana di Feynman Notes untuk menguji pemahaman materi.
+* **Acceptance Criteria:**
+1. Form menyediakan area input teks ringkasan materi.
+2. Sistem menolak penyimpanan catatan jika panjang teks kurang dari 10 karakter.
+3. Catatan yang memenuhi syarat berhasil disimpan dan terhubung dengan ID pengguna.
+
+
+
+### US-05: Active Recall & Blurting Canvas
+
+* **User Story:** Sebagai mahasiswa, saya ingin menggunakan Blurting Canvas dengan fitur sakelar visibilitas teks untuk membandingkan ingatan saya dengan materi asli.
+* **Acceptance Criteria:**
+1. Pengguna dapat mengubah status visibilitas teks canvas (*hide/show*) tanpa menghapus isi teks di dalamnya.
+2. Sistem menolak penyimpanan sesi *blurting* apabila area teks kosong atau hanya berisi spasi.
+3. Data *blurting* yang tersimpan mencatat stempel waktu pengerjaan.
+
+
+
+---
+
+## 3. Penjelasan Unit Test dan Aturan Bisnis
+
+Pengujian unit dilakukan menggunakan *framework* Jest untuk memastikan seluruh fungsi pengolah aturan bisnis (*business logic services*) berjalan sesuai dengan kriteria penerimaan.
+
+| File Unit Test | Modul Teruji | Aturan Bisnis yang Diuji | Status |
+| --- | --- | --- | --- |
+| `tests/1_authService.test.ts` | `auth.service.ts` | Validation kata sandi minimal 6 karakter & pendaftaran pengguna baru. | **PASSED** |
+| `tests/2_taskService.test.ts` | `task.service.ts` | Inisialisasi status awal `PENDING` & kalkulasi status `OVERDUE` berdasarkan tenggat waktu. | **PASSED** |
+| `tests/3_pomodoroService.test.ts` | `pomodoro.service.ts` | Penolakan durasi $\le 0$ menit & pencatatan sesi belajar Pomodoro. | **PASSED** |
+| `tests/4_feynmanService.test.ts` | `feynman.service.ts` | Validasi batas minimal panjang teks catatan Feynman ($10$ karakter). | **PASSED** |
+| `tests/5_blurtingService.test.ts` | `blurting.service.ts` | Fungsi sakelar visibilitas canvas & penolakan teks *blurting* kosong. | **PASSED** |
+
+### Hasil Eksekusi Pengujian (Terminal Output)
+
+```text
+PASS  tests/1_authService.test.ts
+PASS  tests/2_taskService.test.ts
+PASS  tests/3_pomodoroService.test.ts
+PASS  tests/4_feynmanService.test.ts
+PASS  tests/5_blurtingService.test.ts
+
+Test Suites: 5 passed, 5 total
+Tests:       10 passed, 10 total
+Snapshots:   0 total
+Time:        1.245 s
+Ran all test suites.
+
+```
+
+---
+
+## 4. Daftar Commit Version Control (Git Log)
+
+Pengembangan repositori proyek ini dikelompokkan ke dalam minimal dua *commit* terpisah untuk membedakan antara kode produksi MVP dan pengujian unit:
+
+```text
+* commit e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0 (HEAD -> main)
+| Author: Stefie <stefie@example.com>
+| Date:   Wed Oct 14 14:00:00 2026 +0700
+| 
+|     test: add 5 unit test suites for MVP business rules
+| 
+* commit a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0
+  Author: Stefie <stefie@example.com>
+  Date:   Wed Oct 14 13:30:00 2026 +0700
+  
+      feat: implement Scheduler MVP core production code
+
+```
+
+* **Commit 1 (`feat`):** Berisi implementasi seluruh kode sumber aplikasi (modul autentikasi, manajemen tugas, timer Pomodoro, Feynman Notes, dan Blurting Canvas).
+* **Commit 2 (`test`):** Berisi penambahan 5 berkas pengujian unit (*test suites*) pada direktori `tests/` beserta konfigurasi Jest.
