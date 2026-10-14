@@ -1,0 +1,97 @@
+Definisi Masalah dan Ruang Lingkup Proyek yang disesuaikan khusus untuk aplikasi web Scheduler
+
+Tema: Manajemen Waktu dan Produktivitas Akademik Mahasiswa (to do list mahasiswa)
+
+Aplikasi: Web Scheduler (Jadwal Kuliah & Target Belajar)
+
+---
+DESKRIPSI MASALAH
+
+Mahasiswa sering kali menghadapi kesulitan dalam mengatur waktu antara jadwal kuliah yang padat, tugas-tugas kuliah dengan tenggat waktu (*deadline*) yang ketat, serta target belajar mandiri. Masalah yang sering muncul:
+
+1. **Jadwal kuliah dan tugas berantakan.** Jadwal kelas sering tercatat di berbagai tempat (catatan HP, kertas, atau grup WhatsApp), sehingga mahasiswa lupa atau terlambat masuk kelas.
+2. **Kaget dengan *deadline* tugas.** Tugas menumpuk dan baru dikerjakan mendekati tenggat waktu karena tidak ada perencanaan waktu harian yang jelas.
+3. **Tidak ada target belajar mandiri.** Mahasiswa hanya belajar saat ada ujian, tanpa target jam belajar harian atau mingguan yang terstruktur untuk memahami materi kuliah.
+4. **Kesulitan mengukur produktivitas harian.** Mahasiswa tidak tahu apakah waktu mereka sudah digunakan secara efektif atau belum dalam sehari.
+
+Aplikasi manajemen waktu yang ada umumnya terlalu umum atau rumit (seperti kalender korporat atau aplikasi berbayar). Masalah 2 dan 3 belum terjawab secara spesifik dalam satu tampilan yang ramah mahasiswa.
+
+* **Rumusan masalah:** Bagaimana membantu mahasiswa mencatat jadwal kuliah, mengelola daftar tugas (*tasks*) dengan *deadline*, dan memantau target jam belajar harian secara terstruktur?
+
+---
+
+2. Profil Target Pengguna
+
+* **Pengguna utama:** Mahasiswa aktif yang mengikuti perkuliahan dan memiliki banyak tugas akademik.
+* **Kondisi:** Sibuk dengan jadwal kuliah, praktikum, dan tugas mandiri.
+* **Usia:** Sekitar 18 sampai 24 tahun.
+* **Kemampuan teknis:** Terbiasa memakai *browser* dan aplikasi web melalui laptop atau ponsel.
+* **Pengalaman manajemen waktu:** Pemula, sering mengandalkan cara manual atau ingatan.
+* **Kebutuhan:** Antarmuka sederhana, input data cepat, dan pengingat *deadline* tugas yang jelas.
+* **Kendala:** Waktu terbatas, mudah lupa jika tidak ada pengingat visual.
+
+*Jumlah aktor hanya satu, yaitu mahasiswa (user). Tidak ada admin atau peran lain.*
+
+---
+
+3. Manfaat Aplikasi
+
+1. **Keteraturan jadwal:** Seluruh jadwal kuliah tersusun rapi berdasarkan hari dan jam.
+2. **Pengendalian tugas (*task management*):** Membantu mahasiswa melacak tugas yang belum dikerjakan, sedang dikerjakan, atau sudah selesai.
+3. **Target belajar mandiri:** Fitur target belajar memungkinkan mahasiswa menetapkan dan melacak durasi jam belajar harian.
+4. **Peringatan dini *deadline*:** Membantu mahasiswa menghindari penundaan dengan melihat tugas yang mendekati tenggat waktu.
+5. **Evaluasi produktivitas:** Laporan atau ringkasan tugas dan jam belajar membantu mahasiswa melihat seberapa produktif mereka setiap pekannya.
+
+---
+
+ 4. Daftar Fitur Inti
+
+Fitur di bawah ini dipilih agar dapat diselesaikan dalam waktu sekitar 12 pertemuan perkuliahan.
+
+| No | Fitur | Deskripsi Singkat | Prioritas |
+| --- | --- | --- | --- |
+| 1 | Register dan Login | Autentikasi akun pengguna dengan keamanan dasar | Wajib |
+| 2 | Manajemen Jadwal Kuliah | Tambah, ubah, hapus, dan lihat daftar jadwal kuliah (hari, jam, ruang) | Wajib |
+| 3 | Manajemen Tugas (*Tasks*) | Tambah, ubah, hapus, dan lihat daftar tugas beserta *deadline* dan statusnya | Wajib |
+| 4 | Target Belajar Harian | Fitur untuk mencatat target belajar dan memantau jumlah jam belajar | Wajib (Fitur Pembeda) |
+| 5 | Dashboard Ringkasan | Menampilkan ringkasan jadwal hari ini, tugas aktif, dan progress belajar | Wajib |
+| 6 | Integrasi Frontend & Backend | Menghubungkan antarmuka web dengan server Express dan database SQLite | Wajib |
+| 7 | Pengujian & Dokumentasi | Pengujian dasar API dan dokumentasi proyek (README) | Wajib |
+
+**Contoh Rencana Per Fase (Disesuaikan Jadwal Kuliah):**
+
+* **Pertemuan 1–2:** Analisis kebutuhan, definisi masalah, dan desain database (Prisma schema).
+* **Pertemuan 3–4:** *Setup* proyek, konfigurasi database SQLite, dan autentikasi.
+* **Pertemuan 5–7:** Pembuatan fitur CRUD Jadwal Kuliah dan Tugas (*Tasks*).
+* **Pertemuan 8–9:** Implementasi fitur Target Belajar (durasi jam dan *progress*).
+* **Pertemuan 10:** Pembuatan *Dashboard* dan integrasi *frontend* ke *backend*.
+* **Pertemuan 11:** Pengujian sistem dan perbaikan *bug*.
+* **Pertemuan 12:** Dokumentasi (*README*), finalisasi, dan presentasi tugas.
+
+---
+
+5. Fitur yang Tidak Dikerjakan
+
+Fitur berikut sengaja tidak dikerjakan agar fokus proyek tetap terjaga dan selesai tepat waktu:
+
+* Integrasi kalender eksternal (Google Calendar / Outlook)
+* Notifikasi otomatis via WhatsApp, Telegram, atau *Push Notification*
+* Fitur kolaborasi kelompok atau berbagi jadwal antar mahasiswa
+* Sistem absensi kuliah
+* Mode gelap (*Dark Mode* tingkat lanjut)
+
+---
+
+6. Kriteria Aplikasi Dinyatakan Berhasil
+
+A. Fungsional
+
+1. Pengguna dapat melakukan *register*, *login*, dan *logout*.
+2. Pengguna dapat menambah, mengubah, menghapus, dan melihat data **Jadwal Kuliah**, **Tugas**, serta **Target Belajar**.
+3. *Dashboard* otomatis memperbarui data setelah ada perubahan jadwal atau penambahan tugas baru.
+4. Status tugas dan target belajar tampil dengan jelas di antarmuka web.
+
+B. Teknis
+
+1. Aplikasi dapat dijalankan secara lokal melalui `localhost:3000` dengan menggabungkan *frontend* dan *backend* Express.
+2. Database SQLite (`dev.db`) tersinkronisasi dengan baik menggunakan Prisma ORM.
