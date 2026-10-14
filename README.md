@@ -1,46 +1,98 @@
-Menentukan tema aplikasi yang berangkat dari masalah nyata secara lebih terarah. Mahasiswa mengidentifikasi masalah yang akan diselesaikan, profil pengguna sasaran, manfaat utama aplikasi, serta ruang lingkup fitur yang realistis untuk diselesaikan dalam 12 pertemuan.
+ Web Scheduler App
 
----
+Aplikasi web pengelola jadwal dan tugas akademik untuk mahasiswa, dengan fitur pembeda *To do list*.
 
-### 1. TEMA (Mengerucut)
+### Deskripsi Proyek
 
-**Nama Proyek:** Scheduler (Website Pusat Manajemen Waktu dan Ruang Produktivitas Mahasiswa)
+Web Scheduler App membantu mahasiswa mencatat jadwal kuliah, mengelola tenggat waktu tugas, menentukan target jam belajar mingguan, 
+memantau *progress* belajar, dan mengetahui berapa jam yang idealnya harus dialokasikan untuk belajar per hari sampai akhir pekan.
 
-**Deskripsi Masalah**
-Mahasiswa sering kali kesulitan menyeimbangkan waktu antara jadwal perkuliahan yang padat dan tenggat waktu tugas yang menumpuk. Di sisi lain, meskipun banyak yang sadar akan pentingnya metode belajar saintifik (seperti Pomodoro, Feynman Technique, atau Active Recall), alat bantu yang ada saat ini masih terpisah-pisah. Akibatnya, mahasiswa harus membuka beberapa website atau program yang berbeda untuk mencatat tugas, mengatur timer, dan membuat catatan. Hal ini justru memecah fokus dan menurunkan produktivitas.
+### Latar Belakang
 
-**Profil Target Pengguna**
-Mahasiswa aktif yang membutuhkan platform terpusat untuk mengatur rutinitas akademik, melacak tenggat waktu (deadline) tugas, serta ingin meningkatkan kualitas fokus dan pemahaman belajar mereka melalui metode yang terstruktur.
+Mahasiswa sering menghadapi jadwal kuliah yang padat dan tugas yang menumpuk. Tanpa pencatatan yang baik, tugas sering baru dikerjakan mendekati *deadline* (Sistem Kebut Semalam). Selain itu, mahasiswa jarang memiliki target belajar yang terstruktur. Mengetahui jumlah tugas saja tidak cukup membantu memanajemen waktu harian. Aplikasi ini menjawabnya dengan pengingat *deadline* visual dan angka target belajar harian yang mudah dipahami.
 
-**Manfaat Website**
-Scheduler hadir tidak sekadar sebagai website pengingat tugas (To-Do List) biasa, melainkan berevolusi menjadi ruang produktivitas yang utuh. Platform berbasis web ini membantu pengguna untuk memusatkan seluruh kegiatan akademiknya di satu tempat, meningkatkan kedisiplinan melalui pelacakan waktu, serta memfasilitasi teknik belajar yang mendalam agar pemahaman materi kuliah menjadi lebih maksimal.
+### Tujuan
 
-**Daftar Fitur Inti (Ruang Lingkup 12 Pertemuan)**
-Mengingat batas pengerjaan dalam 12 pertemuan menggunakan *tech-stack* dasar (HTML, CSS, JavaScript) dengan tambahan integrasi back-end dan database mandiri, fitur pada *website* ini akan difokuskan pada fungsionalitas esensial:
+1. Mencatat jadwal kuliah berdasarkan hari.
+2. Mengelola daftar tugas (*tasks*) beserta *deadline*-nya.
+3. Menentukan dan memantau target jam belajar mingguan.
+4. Memberi peringatan ketika tenggat waktu tugas mendekati batas kritis (kurang dari 24 jam).
+5. Menghitung *Daily Study Target* dari sisa target jam belajar dan sisa hari.
+6. Menampilkan ringkasan produktivitas akademik mingguan.
 
-1. **Autentikasi & Manajemen Profil:** Pendaftaran akun, login, dan pengaturan data dasar pengguna.
-2. **Dashboard Interaktif & Pelacak Progres:** Halaman utama yang merangkum tugas yang belum selesai, jadwal terdekat, aksi cepat (quick add), serta grafik statistik sederhana mengenai produktivitas mingguan.
-3. **Manajemen Jadwal & Tugas (CRUD):** Fungsionalitas untuk menambah, melihat, mengubah, dan menghapus jadwal perkuliahan serta tugas (dilengkapi filter status dan tenggat waktu).
-4. **Ruang Produktivitas (Sesi Belajar):**
-Pomodoro Timer: Waktu fokus dan istirahat di dalam *website* yang dapat diatur serta dihubungkan langsung dengan tugas tertentu.
-Feynman Notes: Area mengetik terstruktur yang menantang pengguna menyederhanakan materi kuliah.
-Active Recall / Blurting Canvas: Area teks dengan fitur sembunyikan/tampilkan (hide/show) untuk menguji daya ingat pengguna terhadap materi.
+### Target Pengguna
 
+Mahasiswa aktif yang mengikuti perkuliahan dan memiliki beban tugas mandiri, yang ingin belajar mendisiplinkan manajemen waktu mereka. Hanya ada satu peran, yaitu pengguna (mahasiswa).
 
-5. **Notifikasi In-Web Lokal:** Peringatan visual (seperti badge merah atau pop-up toast) di dalam website saat pengguna login jika ada tugas yang tenggat waktunya sudah dekat.
-6. **Desain Responsif & Dark Mode:** Tampilan antarmuka yang nyaman di mata untuk penggunaan malam hari serta tetap rapi saat diakses melalui browser smartphone maupun desktop.
+### Rencana Fitur
 
-**Fitur yang Tidak Dikerjakan (Out of Scope)**
-Untuk menjaga fokus dan memastikan proyek selesai tepat waktu, beberapa fitur lanjutan ditiadakan pada pengembangan tahap ini:
+* Register, login, dan logout
+* Kategori Kegiatan: Kuliah, Praktikum, Tugas, Ujian, Lainnya
+* Pencatatan jadwal kuliah per hari
+* Pencatatan tugas (*tasks*) berdasarkan *deadline*
+* Pengaturan target belajar (jam) untuk minggu tertentu
+* Status tugas dan peringatan *deadline* saat kurang dari 24 jam
+* *Daily Study Target* (Batas Belajar Harian)
+* Dashboard ringkasan akademik (jadwal hari ini & sisa tugas)
+* Laporan mingguan dengan grafik/bar penyelesaian tugas sederhana
 
-* Sinkronisasi dengan kalender eksternal (seperti Google Calendar atau Outlook).
-* Pengiriman notifikasi ke luar ekosistem *website* (misalnya melalui Email, WhatsApp, atau sistem operasi smartphone).
-* Fitur kolaborasi atau berbagi catatan dengan pengguna lain (multiplayer/sharing).
-* Pembuatan dalam bentuk aplikasi *mobile* asli (Native Android/iOS App).
+### Status Tenggat Waktu (Deadline)
 
-**Kriteria Keberhasilan Website**
+| Sisa Waktu Tugas | Status |
+| --- | --- |
+| Lebih dari 3 Hari | Aman |
+| 1 sampai 3 Hari | Perlu Perhatian |
+| Kurang dari 24 Jam | Mendekati Batas (Kritis) |
+| Lewat *Deadline* | Terlambat |
 
-1. **Fungsionalitas Alur Utama Berjalan Lancar:** Pengguna dapat menyelesaikan User Flow utama di dalam website tanpa hambatan—mulai dari mendaftar, menambahkan jadwal/tugas, menjalankan sesi belajar Pomodoro/Feynman, hingga menandai tugas selesai.
-2. **Keandalan Integrasi Data:** Data akademik (jadwal, tugas, riwayat belajar) tersimpan dengan aman di dalam database mandiri dan dapat dimuat ulang (retrieve) dengan benar saat pengguna login kembali.
-3. **Stabilitas dan Aksesibilitas UI/UX:** *Website* dapat beroperasi dengan tampilan yang rapi dan fungsi yang utuh, baik saat diakses melalui browser laptop maupun layar smartphone (responsif).
-4. **Ketepatan Waktu Penyelesaian:** Seluruh daftar fitur inti yang direncanakan dapat diimplementasikan dan bebas dari kendala fatal (bug mayor) dalam batas waktu 12 pertemuan perkuliahan.
+### Daily Study Target
+
+Fitur utama aplikasi. Sistem menghitung jumlah jam yang secara ideal masih harus dipakai untuk belajar per hari sampai akhir pekan.
+
+* Sisa Target Belajar = Target Belajar Mingguan - Total Jam Belajar Tercapai
+* Sisa Hari = Hari terakhir minggu (Minggu) - Hari ini + 1 (termasuk hari ini)
+* **Daily Study Target** = Sisa Target Belajar / Sisa Hari
+
+**Contoh:** Target belajar 10 jam seminggu, jam belajar tercapai 4 jam, sisa target 6 jam, sisa 3 hari dalam pekan tersebut, maka batas belajar harian yang harus dipenuhi adalah 2 jam per hari.
+
+### Rencana Tech Stack
+
+| Bagian | Teknologi |
+| --- | --- |
+| Frontend | HTML, CSS, JavaScript (Vanilla API Fetch) |
+| Backend | Node.js, Express.js |
+| Database | SQLite |
+| ORM | Prisma |
+| Autentikasi | JWT, bcrypt |
+| Infrastruktur | Node environment lokal |
+
+### Rencana Struktur Proyek
+
+```text
+Web Scheduler/
+  front-end/         # Antarmuka web (HTML, JS, CSS)
+  back-end/          # Backend server
+    prisma/          # Skema database & file dev.db
+    routes/          # Endpoint API untuk jadwal, tugas, dll
+    index.js         # File konfigurasi utama Express
+  docs/              # Dokumen proyek
+  README.md          # Dokumentasi utama proyek
+
+```
+
+### Dokumen Proyek
+
+| Dokumen | Isi |
+| --- | --- |
+| 01-IDE_AWAL.md | Tiga ide awal dan alasan pemilihan Web Scheduler |
+| 02-DEFINISI_MASALAH.md | Definisi masalah, fitur inti, dan kriteria keberhasilan |
+| 03-PROJECT_SPEC.md | Spesifikasi teknis lengkap |
+
+### Bagian yang Akan Ditambahkan Setelah Aplikasi Jadi
+
+* Struktur database (ERD/Prisma Schema)
+* Daftar *endpoint* API
+* Instalasi dan konfigurasi `.env`
+* Cara menjalankan (integrasi *backend* dan *frontend* lewat `localhost`)
+* Keterbatasan
+* Pengembangan selanjutnya

@@ -1,0 +1,13 @@
+3 ide, tema untuk website
+
+Sistem Reservasi Ruang Serbaguna (Multihall & Auditorium Booking System)
+Fitur Utama: Pengecekan ketersediaan ruangan secara real-time, pemesanan jadwal untuk auditorium atau multihall, 
+dan sistem validasi otomatis untuk mencegah bentrok jadwal antar peminjam di ruangan dan waktu yang sama.
+
+Sistem Pemantauan dan Kontrol Perangkat (Device Monitoring & Control System)
+Fitur Utama: Pemantauan status perangkat (aktif/mati) secara langsung lewat dashboard web, tombol kendali jarak jauh, 
+dan sistem peringatan otomatis jika ada perangkat yang mendadak offline atau bermasalah.
+
+Aplikasi Manajemen Waktu & Target Belajar (Web Scheduler App)
+Fitur Utama: Pengembangan proyek dari semester 1 dengan tambahan manajemen deadline tugas , serta fitur pembeda Daily Study Target yang otomatis menghitung batas jam belajar harian
+ideal berdasarkan sisa target mingguan dan sisa hari.
