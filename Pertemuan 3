@@ -1,124 +1,205 @@
-Build a simple full-stack web application named *Scheduler*.
+Build a simple full-stack web application named **Scheduler**.
 
-Purpose
-Membangun aplikasi berbasis web bernama Scheduler yang berfungsi sebagai pusat manajemen waktu, pelacak tugas/jadwal kuliah, 
-dan Ruang Belajar produktivitas mahasiswa (mengintegrasikan metode Pomodoro, Feynman Technique, dan Active Recall / Blurting Method) 
-dengan penyimpanan database mandiri.
+Purpose:
+Help undergraduate students manage their academic routine, track coursework tasks and schedules, and execute scientific study sessions (Pomodoro, Feynman Technique, and Active Recall / Blurting Method) with a dedicated database.
 
-Tech Stack & Architecture
-Frontend: HTML, CSS atau Tailwind CSS dan JavaScript
-Backend: Node.js + Express (REST API)
-Database: MySQL (dijalankan via Docker Compose)
-ORM / Database Client: Prisma / Knex / MySQL2
-Authentication: Session-based / JWT Authentication (register, login, profile management)
-Main Entities & Data Models
+Use this stack:
 
-User (Pengguna)
-Id
-Name
-Email
-Password
-CreatedAt
+* Frontend: HTML + CSS (or Tailwind CSS) + TypeScript (or React/Vite)
+* Backend: Node.js + TypeScript + Express
+* Database: MySQL
+* ORM: Prisma
+* API style: REST API
+* Authentication: JWT / Session-based Authentication (Register, Login, Profile)
+* Use Docker Compose for MySQL
+* Use `.env.example` for database URL, JWT secret, and server port
 
-Schedule (Jadwal Mata Kuliah)
-Id
-UserId
-CourseName (Nama Mata Kuliah)
-DayOfWeek (Hari: Senin, Selasa, dll.)
-StartTime
-EndTime
-Room / Lecturer
-CreatedAt
+Code rules:
 
-Task (Tugas Akademik)
-Id
-UserId
-ScheduleId (Opsional / Relasi ke Mata Kuliah)
-Title
-Description
-Deadline
-Status (PENDING, IN_PROGRESS, COMPLETED)
-CreatedAt
+* Do not add comments unless truly necessary.
+* Use PascalCase for all classes, types, interfaces, enums, database models, API DTOs, and JSON property names.
+* Local variables may use camelCase.
+* Keep code lines below 150 characters where practical.
+* Use a clean and simple folder structure.
 
-StudySession (Sesi Belajar / Ruang Produktivitas)
-Id
-UserId
-TaskId (Opsional)
-MethodType (POMODORO, FEYNMAN, BLURTING)
-DurationMinutes
-Notes / Content
-CompletedAt
+Main entities:
 
-Key Features & Requirements
-1. Onboarding & Autentikasi User
-Form Pendaftaran (Register) & Masuk (Login) dengan enkripsi password.
+1. User
+   * Id
+   * Name
+   * Email
+   * Password
+   * CreatedAt
 
-Halaman Manajemen Profil: Pengguna dapat melihat dan memperbarui nama, email, serta password.
+2. Schedule
+   * Id
+   * UserId
+   * CourseName
+   * DayOfWeek
+   * StartTime
+   * EndTime
+   * Room
+   * Lecturer
+   * CreatedAt
 
-2. Dashboard Interaktif
-Ringkasan tugas belum selesai (Pending Tasks Count).
+3. Task
+   * Id
+   * UserId
+   * ScheduleId
+   * Title
+   * Description
+   * Deadline
+   * Status (PENDING, IN_PROGRESS, COMPLETED)
+   * CreatedAt
 
-Jadwal mata kuliah terdekat hari ini / minggu ini.
+4. StudySession
+   * Id
+   * UserId
+   * TaskId
+   * MethodType (POMODORO, FEYNMAN, BLURTING)
+   * DurationMinutes
+   * Notes
+   * CompletedAt
 
-Aksi cepat (Quick Add Task / Quick Schedule).
+Enums:
 
-Grafik / Ringkasan Statistik: Total jam belajar via Pomodoro dan jumlah tugas selesai minggu ini.
+* TaskStatus: PENDING, IN_PROGRESS, COMPLETED
+* MethodType: POMODORO, FEYNMAN, BLURTING
 
-Notifikasi In-App (Toast Alert atau Badge) untuk tugas yang mendekati deadline (H-1).
+Database rules:
 
-3. Manajemen Jadwal Kuliah (CRUD Schedule)
-Tambah, lihat, ubah, dan hapus jadwal mata kuliah harian.
+* User Email must be unique.
+* A Task optionally belongs to a Schedule (nullable ScheduleId).
+* A StudySession optionally belongs to a Task (nullable TaskId).
+* Use Prisma migrations and seed one example user, two schedules, three tasks, and sample study sessions.
 
-4. Pelacak Status Tugas (CRUD Task)
-Filter tugas berdasarkan Status (PENDING, IN_PROGRESS, COMPLETED), Deadline, dan Mata Kuliah.
+Backend features:
 
-Tombol cepat untuk mengubah status tugas menjadi COMPLETED.
+1. Auth & Profile Management
+   * Register, Login, and Get Current User Profile.
+   * Update profile information (Name, Email, Password).
 
-5. Ruang Belajar / Ruang Produktivitas (Fitur Utama Baru)
-Pomodoro Timer: Timer bawaan dengan opsi interval (25 mnt fokus / 5 mnt istirahat) yang bisa dikaitkan langsung ke ID tugas tertentu.
+2. CRUD Schedule
+   * Create, list, detail, update, and delete schedules for the authenticated user.
 
-Feynman Notes: Form catatan khusus di mana mahasiswa mengetik ulang ringkasan materi dengan bahasa sederhana.
+3. CRUD Task
+   * Create, list, detail, update, and delete tasks for the authenticated user.
+   * Quick endpoint to mark a task as COMPLETED (`PATCH /api/tasks/:Id/complete`).
+   * Support filtering by Status, Deadline, and ScheduleId.
 
-Active Recall / Blurting Canvas:
+4. Study Session Management
+   * Record completed study sessions (Pomodoro, Feynman Notes, or Blurting Canvas).
+   * Associate sessions with specific tasks when selected.
 
-Area teks Blurting tempat pengguna mengetikkan seluruh ingatan materi.
+5. Dashboard API
+   * Return a course/productivity summary:
+     * PendingTasksCount
+     * TotalCompletedTasks
+     * TotalStudyMinutes
+     * TotalPomodoroSessions
+     * UpcomingSchedules
+     * TasksNearingDeadline (tasks due within 24 hours / H-1)
+   * Return weekly productivity progress statistics for display.
 
-Fitur Hide/Show Canvas untuk membandingkan teks ingatan dengan catatan asli secara berdampingan.
+Frontend pages:
 
-6. UI/UX & Responsive Requirements
-Tampilan sepenuhnya Mobile-Responsive (nyaman diakses via smartphone maupun PC).
+1. Dashboard Page
+   * Summary cards: pending tasks, completed tasks, total focus hours, and upcoming classes today.
+   * Quick Add Task & Quick Add Schedule modals or action forms.
+   * In-App notification toast or badge for tasks due within H-1.
+   * Weekly study session progress summary.
 
-Fitur Dark Mode (Toggle Tema Terang / Gelap).
+2. Schedule Management Page
+   * List and calendar/day view for weekly course routines.
+   * Form to create, edit, and delete schedules.
 
-Menggunakan antarmuka Bahasa Indonesia untuk semua tombol, pesan validasi, dan instruksi.
+3. Task Management Page
+   * Task table/kanban view with status filters (`PENDING`, `IN_PROGRESS`, `COMPLETED`).
+   * Form to add, edit, and delete tasks with deadline picker.
+   * Quick "Complete Task" button.
+   * Button to start a study session directly from a task.
 
-Required REST API Routes
-POST /api/auth/register
+4. Study Space / Ruang Belajar Page
+   * Mode Selector: Pomodoro Timer, Feynman Notes, or Active Recall / Blurting Canvas.
+   * Pomodoro Timer: 25-min focus / 5-min break timer linked to a task.
+   * Feynman Notes: Form challenging students to simplify lecture concepts.
+   * Blurting Canvas: Free-text recall area with a Hide/Show toggle button.
 
-POST /api/auth/login
+5. Profile Management Page
+   * User detail card.
+   * Form to update account name, email, and password.
 
-GET /api/users/profile
+UI requirements:
 
-PUT /api/users/profile
+* Use Indonesian language for all labels, buttons, messages, and validation.
+* Create a clean, responsive student dashboard (mobile-friendly).
+* Support Dark Mode toggle (Light / Dark theme).
+* Status badge colors:
+  * PENDING: Red / Orange
+  * IN_PROGRESS: Blue
+  * COMPLETED: Green
 
-GET /api/schedules
+Required API routes:
 
-POST /api/schedules
+* `POST /api/auth/register`
+* `POST /api/auth/login`
+* `GET /api/users/profile`
+* `PUT /api/users/profile`
+* `GET /api/schedules`
+* `POST /api/schedules`
+* `PUT /api/schedules/:Id`
+* `DELETE /api/schedules/:Id`
+* `GET /api/tasks`
+* `POST /api/tasks`
+* `PUT /api/tasks/:Id`
+* `DELETE /api/tasks/:Id`
+* `PATCH /api/tasks/:Id/complete`
+* `POST /api/study-sessions`
+* `GET /api/dashboard/summary`
 
-PUT /api/schedules/:Id
+Deliverables:
 
-DELETE /api/schedules/:Id
+* Complete frontend and backend source code.
+* Prisma schema, migration, and seed data.
+* Docker Compose file for MySQL.
+* `.env.example`.
+* README with setup, database migration, seed, frontend/backend startup, and Docker usage instructions.
 
-GET /api/tasks
+Project structure:
 
-POST /api/tasks
+* Use a TypeScript monorepo with npm workspaces.
+* Structure:
 
-PUT /api/tasks/:Id
+scheduler/
+  apps/
+    web/
+    api/
+  packages/
+    shared/
 
-DELETE /api/tasks/:Id
+Shared package requirements:
 
-PATCH /api/tasks/:Id/complete
+* Create `packages/shared` as `@scheduler/shared`.
+* Store all shared domain models, enums, API response types, and shared DTOs here.
+* Both `apps/web` and `apps/api` must import shared types from this package.
+* Example shared files:
 
-POST /api/study-sessions
+packages/shared/src/
+  models/
+    User.ts
+    Schedule.ts
+    Task.ts
+    StudySession.ts
+  enums/
+    TaskStatus.ts
+    MethodType.ts
+  dto/
+    DashboardSummaryResponse.ts
+    AuthResponse.ts
+  index.ts
 
-GET /api/dashboard/summary
+Model rules:
+
+* Define shared TypeScript interfaces or types only once in `packages/shared`.
+* Prisma models remain in the backend; map Prisma entities to shared API models in API responses.
+* The frontend must not import Prisma types.
