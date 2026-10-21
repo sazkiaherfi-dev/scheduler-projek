@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scheduler - Ruang Belajar</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f9; }
+    .container { background: white; padding: 20px; border-radius: 8px; }
+    .blurting-box { width: 100%; height: 100px; margin-top: 10px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Ruang Belajar Saintifik</h2>
+    
+    <!-- Pomodoro Section -->
+    <h3>1. Pomodoro Timer</h3>
+    <p>Waktu Fokus: <strong id="timer">25:00</strong></p>
+    <button onclick="startTimer()">Mulai Timer</button>
+
+    <hr>
+
+    <!-- Blurting Method Section -->
+    <h3>2. Active Recall / Blurting Canvas</h3>
+    <button onclick="toggleCanvas()">Sembunyikan / Tampilkan Canvas</button>
+    <br>
+    <textarea id="blurting-text" class="blurting-box" placeholder="Tuliskan semua ingatan materi kuliah kamu di sini..."></textarea>
+  </div>
+
+  <script>
+    function startTimer() {
+      alert("Timer Pomodoro 25 menit dimulai!");
+    }
+
+    function toggleCanvas() {
+      const canvas = document.getElementById('blurting-text');
+      canvas.classList.toggle('hidden');
+    }
+  </script>
+</body>
+</html>

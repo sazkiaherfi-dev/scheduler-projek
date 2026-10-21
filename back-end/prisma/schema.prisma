@@ -3,42 +3,69 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   name      String
-  email     String   @unique
+  email     String         @unique
   password  String
-  createdAt DateTime @default(now())
-
+  createdAt DateTime       @default(now())
   schedules Schedule[]
   tasks     Task[]
+  sessions  StudySession[]
 }
 
 model Schedule {
   id         Int      @id @default(autoincrement())
   userId     Int
   courseName String
-  dayOfWeek  String   
-  startTime  String   
+  dayOfWeek  String
+  startTime  String
   endTime    String
-  room       String?  
+  room       String?
+  lecturer   String?
   createdAt  DateTime @default(now())
-
   user       User     @relation(fields: [userId], references: [id])
+  tasks      Task[]
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   userId      Int
+  scheduleId  Int?
   title       String
   description String?
   deadline    DateTime
-  status      String   @default("PENDING")
-  createdAt   DateTime @default(now())
+  status      TaskStatus     @default(PENDING)
+  createdAt   DateTime       @default(now())
+  user        User           @relation(fields: [userId], references: [id])
+  schedule    Schedule?      @relation(fields: [scheduleId], references: [id])
+  sessions    StudySession[]
+}
 
-  user        User     @relation(fields: [userId], references: [id])
+enum MethodType {
+  POMODORO
+  FEYNMAN
+  BLURTING
+}
+
+model StudySession {
+  id              Int        @id @default(autoincrement())
+  userId          Int
+  taskId          Int?
+  methodType      MethodType
+  durationMinutes Int
+  notes           String?    @db.Text
+  completedAt     DateTime   @default(now())
+  user            User       @relation(fields: [userId], references: [id])
+  task            Task?      @relation(fields: [taskId], references: [id])
 }
