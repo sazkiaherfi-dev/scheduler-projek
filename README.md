@@ -1,4 +1,4 @@
-Menentukan tema aplikasi yang berangkat dari masalah nyata secara lebih terarah. Mahasiswa mengidentifikasi masalah yang akan diselesaikan, profil pengguna sasaran, manfaat utama aplikasi, serta ruang lingkup fitur yang realistis untuk diselesaikan dalam 12 pertemuan.
+Menentukan tema aplikasi yang berangkat dari masalah nyata secara lebih terarah. Mengidentifikasi masalah yang akan diselesaikan, profil pengguna sasaran, manfaat utama aplikasi, serta ruang lingkup fitur yang realistis untuk diselesaikan dalam 12 pertemuan.
 
 ---
 
