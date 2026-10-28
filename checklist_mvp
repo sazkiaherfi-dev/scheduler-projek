@@ -1,0 +1,9 @@
+# Checklist MVP dan Status Pengujian
+
+| Fitur MVP | Deskripsi Singkat | Status UI | Status Unit Test |
+| :--- | :--- | :--- | :--- |
+| Manajemen Tugas | Menambah tugas baru ke database | Berjalan | **PASSED** |
+| Update Status | Menandai tugas menjadi selesai | Berjalan | **PASSED** |
+| Jadwal Kelas | Validasi bentrok jadwal mata kuliah | Berjalan | **PASSED** |
+| Pomodoro Timer | Validasi rentang waktu fokus (1-120 menit) | Berjalan | **PASSED** |
+| Active Recall | Mencegah input flashcard kosong | Berjalan | **PASSED** |
