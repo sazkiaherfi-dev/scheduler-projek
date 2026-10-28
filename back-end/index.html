@@ -11,7 +11,7 @@
             theme: {
                 extend: {
                     colors: {
-                        sidebar: '#2C3E50', // Mengikuti referensi warna biru gelap awal
+                        sidebar: '#2C3E50',
                     }
                 }
             }
@@ -49,7 +49,7 @@
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">S</div>
                     <span class="font-medium">Hai, User</span>
-                    <span class="w-3 h-3 rounded-full bg-green-500 block"></span> <!-- Status Online -->
+                    <span class="w-3 h-3 rounded-full bg-green-500 block"></span>
                 </div>
             </div>
         </header>
@@ -152,7 +152,6 @@
             <section id="view-belajar" class="view-section hidden">
                 <h2 class="text-2xl font-bold mb-6">Ruang Produktivitas</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    
                     <!-- Pomodoro Timer -->
                     <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow text-center">
                         <h3 class="text-xl font-bold mb-2">Pomodoro Timer</h3>
@@ -193,15 +192,15 @@
             <form id="formTambahTugas" class="space-y-4">
                 <div>
                     <label class="block text-sm mb-1">Mata Kuliah (Opsional)</label>
-                    <input type="text" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: Algoritma">
+                    <input type="text" id="inputMataPelajaran" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: Algoritma">
                 </div>
                 <div>
                     <label class="block text-sm mb-1">Judul Tugas</label>
-                    <input type="text" required class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: Buat ERD Database">
+                    <input type="text" id="inputNamaTugas" required class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Contoh: Buat ERD Database">
                 </div>
                 <div>
                     <label class="block text-sm mb-1">Deadline</label>
-                    <input type="date" required class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
+                    <input type="date" id="inputDeadline" required class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600">
                 </div>
                 <div class="flex justify-end gap-2 mt-6">
                     <button type="button" onclick="closeModal('modalTugas')" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Batal</button>
@@ -212,7 +211,6 @@
     </div>
 
     <!-- MODAL TAMBAH JADWAL -->
-   <!-- MODAL TAMBAH JADWAL -->
     <div id="modalJadwal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
             <h3 class="text-xl font-bold mb-4">Tambah Jadwal Kuliah</h3>
@@ -254,5 +252,40 @@
     <!-- Memuat Script Utama -->
     <script src="js/ui.js"></script>
     <script src="js/timer.js"></script>
+    <script>
+        document.getElementById('formTambahTugas').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('inputNamaTugas').value;
+            const mataPelajaran = document.getElementById('inputMataPelajaran').value || 'Umum';
+            const rawDeadline = document.getElementById('inputDeadline').value;
+
+            try {
+                const res = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title,
+                        course: mataPelajaran,
+                        deadline: rawDeadline
+                    })
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    const message = errorData.detail || errorData.error || `Permintaan gagal (${res.status}).`;
+                    console.error('Error dari backend:', errorData);
+                    alert(message);
+                    return;
+                }
+
+                closeModal('modalTugas');
+                location.reload();
+            } catch (error) {
+                console.error('Gagal mengirim tugas:', error);
+                alert('Tugas tidak dapat disimpan. Periksa koneksi ke server lalu coba lagi.');
+            }
+        });
+    </script>
 </body>
 </html>

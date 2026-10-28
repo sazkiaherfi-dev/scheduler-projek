@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -32,12 +32,6 @@ model Schedule {
   tasks      Task[]
 }
 
-enum TaskStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-}
-
 model Task {
   id          Int            @id @default(autoincrement())
   userId      Int
@@ -45,27 +39,21 @@ model Task {
   title       String
   description String?
   deadline    DateTime
-  status      TaskStatus     @default(PENDING)
+  status      String         @default("PENDING")
   createdAt   DateTime       @default(now())
   user        User           @relation(fields: [userId], references: [id])
   schedule    Schedule?      @relation(fields: [scheduleId], references: [id])
   sessions    StudySession[]
 }
 
-enum MethodType {
-  POMODORO
-  FEYNMAN
-  BLURTING
-}
-
 model StudySession {
-  id              Int        @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   userId          Int
   taskId          Int?
-  methodType      MethodType
+  methodType      String
   durationMinutes Int
-  notes           String?    @db.Text
-  completedAt     DateTime   @default(now())
-  user            User       @relation(fields: [userId], references: [id])
-  task            Task?      @relation(fields: [taskId], references: [id])
+  notes           String?
+  completedAt     DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+  task            Task?    @relation(fields: [taskId], references: [id])
 }
