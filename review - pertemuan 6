@@ -1,0 +1,21 @@
+Review:  
+MVP nya apa? 
+jawab : "MVP projek ini bernama Scheduler, yaitu aplikasi web pengelola waktu dan produktivitas mahasiswa. 
+Aplikasi ini menggabungkan fitur Manajemen Tugas (Task CRUD) dengan Ruang Belajar Saintifik yang menerapkan teknik
+belajar Pomodoro Timer dan Blurting Canvas (Active Recall)."
+
+Tolong dijalankan, cek apakah sudah berjalan?
+Langkah Eksekusi:
+
+Pastikan terminal berada di folder back-end, lalu jalankan server:
+npm start
+Buka browser di http://localhost:3000
+
+Dimana unit test, Run semua unit test ? wajib All Passed
+- Lokasi File: Berada di dalam folder back-end/test/.
+- 5 Suite Unit Test:
+a. auth.test.js (Pengujian validasi panjang password).
+b. task.test.js (Pengujian status tugas default PENDING & perubahan ke COMPLETED).
+c. podomoro.test.js (Pengujian validasi durasi timer > 0).
+d. feynman.test.js (Pengujian batas minimal catatan ringkasan).
+e. blurting.test.js (Pengujian logika toggle sembunyikan/tampilkan canvas).
