@@ -1,0 +1,36 @@
+Point- point Laporan
+
+#### A. Link Ringkasan Projek
+
+* **URL Production (Vercel):** `[https://scheduler-projek.vercel.app](https://scheduler-projek.vercel.app)`
+* **Repository GitHub:** Link ke repositori kodinganmu.
+
+#### B. Arsitektur & Tech Stack System
+
+* **Backend Framework:** Express.js (Node.js)
+* **ORM:** Prisma ORM
+* **Database Cloud:** PostgreSQL di Neon.tech
+* **Deployment Platform:** Vercel (Serverless Functions)
+
+#### C. Dokumentasi API (API Endpoints)
+
+Buat tabel sederhana daftar endpoint yang disediakan backend kamu:
+
+| Method | Endpoint | Deskripsi | Status |
+| --- | --- | --- | --- |
+| **GET** | `/api/schedules` | Mengambil seluruh data jadwal | `200 OK` |
+| **POST** | `/api/schedules` | Menambah jadwal baru | `201 Created` |
+| **PUT** | `/api/schedules/:id` | Mengubah data jadwal | `200 OK` |
+| **DELETE** | `/api/schedules/:id` | Menghapus jadwal | `200 OK` |
+
+#### D. Skema Database (ERD)
+
+* Lampirkan screenshot isi file `prisma/schema.prisma` atau visualisasi tabel yang ada di dashboard Neon.tech.
+
+#### E. Kendala & Solusi (Poin Tambahan Presentasi)
+
+Dosen sangat menyukai bagian ini saat presentasi. Kamu bisa menceritakan proses penyelesaian masalah teknis saat deploy:
+
+* **Kendala:** Terjadi error `500 Function Invocation Failed` saat deploy backend Express + Prisma ke platform serverless Vercel.
+* **Penyebab:** Database lokal (`localhost`) tidak dapat diakses publik, serta Prisma Client tidak otomatis di-build oleh Vercel.
+* **Solusi:** Migrasi database ke PostgreSQL Cloud (**Neon.tech**), menambah variabel `DATABASE_URL` di Vercel, serta menyisipkan script `"postinstall": "prisma generate"` pada `package.json`.
