@@ -33,3 +33,6 @@ Jalankan server aplikasi:
 Bash
 npm start
 Akses melalui browser di: http://localhost:3000
+
+pengujian unit test 
+npm test 
