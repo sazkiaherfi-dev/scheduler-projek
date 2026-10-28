@@ -10,6 +10,41 @@ const profileName = document.getElementById('profileName');
 const profileNameDetail = document.getElementById('profileNameDetail');
 const profileEmail = document.getElementById('profileEmail');
 const profileInitial = document.getElementById('profileInitial');
+const editProfileButton = document.getElementById('editProfileButton');
+const profileEditForm = document.getElementById('profileEditForm');
+const profileNameInput = document.getElementById('profileNameInput');
+const profileEmailInput = document.getElementById('profileEmailInput');
+const profilePasswordInput = document.getElementById('profilePasswordInput');
+const profileUpdateMessage = document.getElementById('profileUpdateMessage');
+const cancelEditProfile = document.getElementById('cancelEditProfile');
+
+let currentUser = null;
+
+function setProfileMessage(message, isError = false) {
+    if (!profileUpdateMessage) return;
+    profileUpdateMessage.textContent = message;
+    profileUpdateMessage.classList.remove('hidden', 'text-red-600', 'text-green-600');
+    profileUpdateMessage.classList.add(isError ? 'text-red-600' : 'text-green-600');
+    profileUpdateMessage.classList.remove('hidden');
+}
+
+function populateProfileForm(user) {
+    if (!user) return;
+    if (profileNameInput) profileNameInput.value = user.name || '';
+    if (profileEmailInput) profileEmailInput.value = user.email || '';
+    if (profilePasswordInput) profilePasswordInput.value = '';
+}
+
+function toggleProfileEdit(show) {
+    if (!profileEditForm) return;
+    profileEditForm.classList.toggle('hidden', !show);
+    if (show && currentUser) {
+        populateProfileForm(currentUser);
+    }
+    if (profileUpdateMessage) {
+        profileUpdateMessage.classList.add('hidden');
+    }
+}
 
 async function loadCurrentUser() {
     try {
@@ -20,6 +55,7 @@ async function loadCurrentUser() {
 
         const result = await response.json();
         const user = result.user || {};
+        currentUser = user;
         const firstName = (user.name || 'User').trim();
         const initial = firstName.charAt(0).toUpperCase();
         if (userGreeting) userGreeting.textContent = `Hai, ${firstName}`;
@@ -28,9 +64,49 @@ async function loadCurrentUser() {
         if (profileNameDetail) profileNameDetail.textContent = user.name || '-';
         if (profileEmail) profileEmail.textContent = user.email || '-';
         if (profileInitial) profileInitial.textContent = initial || 'U';
+        populateProfileForm(user);
     } catch (error) {
         window.location.href = '/login.html';
     }
+}
+
+if (editProfileButton) {
+    editProfileButton.addEventListener('click', () => toggleProfileEdit(true));
+}
+
+if (cancelEditProfile) {
+    cancelEditProfile.addEventListener('click', () => toggleProfileEdit(false));
+}
+
+if (profileEditForm) {
+    profileEditForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const name = profileNameInput?.value.trim() || '';
+        const email = profileEmailInput?.value.trim() || '';
+        const password = profilePasswordInput?.value || '';
+
+        try {
+            const response = await fetch('/api/auth/me', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ name, email, password })
+            });
+
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(result.error || 'Gagal memperbarui profil');
+            }
+
+            currentUser = result.user || currentUser;
+            setProfileMessage('Profil berhasil diperbarui', false);
+            await loadCurrentUser();
+            toggleProfileEdit(false);
+        } catch (error) {
+            setProfileMessage(error.message || 'Profil gagal diperbarui', true);
+        }
+    });
 }
 
 // Cek preferensi sebelumnya di localStorage

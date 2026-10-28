@@ -54,7 +54,10 @@ app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, req.path === '/' ? 'index.html' : req.path));
 });
 
-// Jalankan Server
-app.listen(PORT, () => {
-  console.log(`Server Scheduler berjalan di http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server Scheduler berjalan di http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

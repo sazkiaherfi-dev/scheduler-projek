@@ -103,6 +103,28 @@
                             <p id="profileEmail" class="font-medium">-</p>
                         </div>
                     </div>
+                    <div class="mt-6 flex justify-end">
+                        <button id="editProfileButton" type="button" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Edit Profil</button>
+                    </div>
+                    <form id="profileEditForm" class="hidden mt-6 space-y-4 border-t dark:border-gray-700 pt-4">
+                        <div>
+                            <label class="block text-sm mb-1">Nama Lengkap</label>
+                            <input id="profileNameInput" type="text" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-1">Email</label>
+                            <input id="profileEmailInput" type="email" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-1">Password Baru (opsional)</label>
+                            <input id="profilePasswordInput" type="password" minlength="8" class="w-full border p-2 rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Kosongkan jika tidak ingin mengubah">
+                        </div>
+                        <div class="flex justify-end gap-2">
+                            <button type="button" id="cancelEditProfile" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Batal</button>
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                    <p id="profileUpdateMessage" class="mt-4 text-sm hidden"></p>
                 </div>
             </section>
 
