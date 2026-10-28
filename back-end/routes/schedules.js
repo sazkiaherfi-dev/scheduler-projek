@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
+const { requireAuth } = require('../middleware/auth');
 const prisma = new PrismaClient();
 
-// GET: Mengambil semua data jadwal
+router.use(requireAuth);
+
+// GET: Mengambil semua data jadwal milik pengguna
 router.get('/', async (req, res) => {
     try {
-        const schedules = await prisma.schedule.findMany();
+        const schedules = await prisma.schedule.findMany({ where: { userId: req.userId } });
         res.json(schedules);
     } catch (error) {
         res.status(500).json({ error: "Gagal mengambil data jadwal" });
@@ -19,7 +22,7 @@ router.post('/', async (req, res) => {
     try {
         const newSchedule = await prisma.schedule.create({
             data: {
-                userId: 1, // Hardcode sementara agar tidak error sebelum fitur login aktif
+                userId: req.userId,
                 courseName,
                 dayOfWeek,
                 startTime,
@@ -38,11 +41,11 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await prisma.schedule.delete({
-            where: { id: Number(id) }
+            where: { id: Number(id), userId: req.userId }
         });
         res.json({ message: "Jadwal berhasil dihapus" });
     } catch (error) {
-        res.status(500).json({ error: "Gagal menghapus jadwall" });
+        res.status(500).json({ error: "Gagal menghapus jadwal" });
     }
 });
 

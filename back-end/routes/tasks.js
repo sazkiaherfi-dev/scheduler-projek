@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
+const { requireAuth } = require('../middleware/auth');
 const prisma = new PrismaClient();
 
-// GET: Ambil daftar tugas
+router.use(requireAuth);
+
+// GET: Ambil daftar tugas milik pengguna
 router.get('/', async (req, res) => {
     try {
-        const tasks = await prisma.task.findMany();
+        const tasks = await prisma.task.findMany({ where: { userId: req.userId } });
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ error: "Gagal mengambil data tugas" });
@@ -33,23 +36,11 @@ router.post('/', async (req, res) => {
     const description = typeof body.description === 'string' ? body.description.trim() : '';
 
     try {
-        // Otomatis pastikan User ID 1 selalu ada di database
-        await prisma.user.upsert({
-            where: { id: 1 },
-            update: {},
-            create: {
-                id: 1,
-                name: 'User Demo',
-                email: 'user@demo.com',
-                password: 'password123'
-            }
-        });
-
         const matkul = course || subject || 'Umum';
 
         const newTask = await prisma.task.create({
             data: {
-                userId: 1,
+                userId: req.userId,
                 title,
                 description: description || matkul,
                 deadline: deadlineDate,
@@ -72,14 +63,40 @@ router.patch('/:id/complete', async (req, res) => {
     }
 
     try {
-        const updatedTask = await prisma.task.update({
-            where: { id },
+        const result = await prisma.task.updateMany({
+            where: { id, userId: req.userId },
             data: { status: 'COMPLETED' }
         });
+
+        if (!result.count) {
+            return res.status(404).json({ error: 'Tugas tidak ditemukan' });
+        }
+
+        const updatedTask = await prisma.task.findUnique({ where: { id } });
         res.json(updatedTask);
     } catch (error) {
         console.error('Error memperbarui status tugas:', error);
         res.status(500).json({ error: 'Gagal mengupdate status tugas' });
+    }
+});
+
+// DELETE: Menghapus tugas berdasarkan ID
+router.delete('/:id', async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+        return res.status(400).json({ error: 'ID tugas tidak valid' });
+    }
+
+    try {
+        const result = await prisma.task.deleteMany({ where: { id, userId: req.userId } });
+        if (!result.count) {
+            return res.status(404).json({ error: 'Tugas tidak ditemukan' });
+        }
+
+        res.json({ message: 'Tugas berhasil dihapus' });
+    } catch (error) {
+        console.error('Error menghapus tugas:', error);
+        res.status(500).json({ error: 'Gagal menghapus tugas' });
     }
 });
 

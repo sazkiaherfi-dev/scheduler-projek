@@ -30,9 +30,10 @@
             <button onclick="switchView('jadwal')" class="w-full text-left p-3 rounded hover:bg-blue-600 transition nav-btn" data-target="jadwal">📅 Jadwal</button>
             <button onclick="switchView('tugas')" class="w-full text-left p-3 rounded hover:bg-blue-600 transition nav-btn" data-target="tugas">📋 Tugas</button>
             <button onclick="switchView('belajar')" class="w-full text-left p-3 rounded hover:bg-blue-600 transition nav-btn" data-target="belajar">🧠 Ruang Belajar</button>
+            <button onclick="switchView('profil')" class="w-full text-left p-3 rounded hover:bg-blue-600 transition nav-btn" data-target="profil">👤 Profil Saya</button>
         </nav>
         <div class="p-4 border-t border-gray-600">
-            <button class="w-full text-left p-3 rounded hover:bg-red-600 transition">🚪 Logout</button>
+            <button id="logoutButton" class="w-full text-left p-3 rounded hover:bg-red-600 transition">🚪 Logout</button>
         </div>
     </aside>
 
@@ -47,8 +48,8 @@
                     🌓
                 </button>
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">S</div>
-                    <span class="font-medium">Hai, User</span>
+                <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold" id="userInitial">S</div>
+                <span class="font-medium" id="userGreeting">Hai, User</span>
                     <span class="w-3 h-3 rounded-full bg-green-500 block"></span>
                 </div>
             </div>
@@ -77,6 +78,30 @@
                     <div class="flex gap-2">
                         <button onclick="switchView('jadwal'); openModal('modalJadwal')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">+ Tambah Jadwal</button>
                         <button onclick="switchView('tugas'); openModal('modalTugas')" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">+ Tambah Tugas</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: PROFIL -->
+            <section id="view-profil" class="view-section hidden">
+                <h2 class="text-2xl font-bold mb-6">Profil Saya</h2>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow max-w-2xl">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div id="profileInitial" class="w-16 h-16 rounded-full bg-blue-500 text-white flex items-center justify-center text-2xl font-bold">U</div>
+                        <div>
+                            <h3 id="profileName" class="text-xl font-bold">Memuat profil...</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Informasi akun Scheduler</p>
+                        </div>
+                    </div>
+                    <div class="border-t dark:border-gray-700 pt-4 space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Nama</p>
+                            <p id="profileNameDetail" class="font-medium">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                            <p id="profileEmail" class="font-medium">-</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -121,9 +146,19 @@
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow overflow-x-auto">
                     <div class="flex gap-2 mb-4">
-                        <select class="border p-2 rounded dark:bg-gray-700 dark:border-gray-600"><option>Semua Status</option><option>Pending</option><option>Selesai</option></select>
-                        <select class="border p-2 rounded dark:bg-gray-700 dark:border-gray-600"><option>Semua Deadline</option></select>
-                        <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded dark:bg-gray-700 dark:text-white">Reset</button>
+                        <select id="taskStatusFilter" class="border p-2 rounded dark:bg-gray-700 dark:border-gray-600" aria-label="Filter status tugas">
+                            <option value="all">Semua Status</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="COMPLETED">Selesai</option>
+                        </select>
+                        <select id="taskDeadlineFilter" class="border p-2 rounded dark:bg-gray-700 dark:border-gray-600" aria-label="Filter deadline tugas">
+                            <option value="all">Semua Deadline</option>
+                            <option value="overdue">Terlambat</option>
+                            <option value="today">Hari ini</option>
+                            <option value="week">7 hari ke depan</option>
+                            <option value="month">30 hari ke depan</option>
+                        </select>
+                        <button id="resetTaskFilters" type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded dark:bg-gray-700 dark:text-white">Reset</button>
                     </div>
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -135,16 +170,9 @@
                                 <th class="p-3">AKSI</th>
                             </tr>
                         </thead>
-                        <tbody id="taskTableBody">
-                            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td class="p-3">Algoritma</td>
-                                <td class="p-3">Buat Flowchart CRUD</td>
-                                <td class="p-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-bold">PENDING</span></td>
-                                <td class="p-3">15 Okt 2026</td>
-                                <td class="p-3"><button class="text-blue-500 hover:underline">Selesai</button></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="taskTableBody"></tbody>
                     </table>
+                    <p id="taskMessage" class="hidden mt-4 text-sm text-gray-500" role="status"></p>
                 </div>
             </section>
 
@@ -252,40 +280,5 @@
     <!-- Memuat Script Utama -->
     <script src="js/ui.js"></script>
     <script src="js/timer.js"></script>
-    <script>
-        document.getElementById('formTambahTugas').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const title = document.getElementById('inputNamaTugas').value;
-            const mataPelajaran = document.getElementById('inputMataPelajaran').value || 'Umum';
-            const rawDeadline = document.getElementById('inputDeadline').value;
-
-            try {
-                const res = await fetch('/api/tasks', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        title,
-                        course: mataPelajaran,
-                        deadline: rawDeadline
-                    })
-                });
-
-                if (!res.ok) {
-                    const errorData = await res.json();
-                    const message = errorData.detail || errorData.error || `Permintaan gagal (${res.status}).`;
-                    console.error('Error dari backend:', errorData);
-                    alert(message);
-                    return;
-                }
-
-                closeModal('modalTugas');
-                location.reload();
-            } catch (error) {
-                console.error('Gagal mengirim tugas:', error);
-                alert('Tugas tidak dapat disimpan. Periksa koneksi ke server lalu coba lagi.');
-            }
-        });
-    </script>
 </body>
 </html>

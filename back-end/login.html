@@ -14,36 +14,134 @@
     <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400">Scheduler</h1>
-            <p class="text-sm text-gray-500 mt-2">Masuk untuk mengelola waktu dan tugasmu</p>
+            <p class="text-sm text-gray-500 mt-2">Masuk atau daftar untuk mengelola waktu dan tugasmu</p>
         </div>
 
-        <form id="loginForm" class="space-y-5">
+        <div class="flex mb-6 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+            <button type="button" id="tabLogin" class="flex-1 py-2 rounded-lg bg-blue-600 text-white font-semibold">Masuk</button>
+            <button type="button" id="tabRegister" class="flex-1 py-2 rounded-lg text-gray-700 dark:text-gray-200 font-medium">Daftar</button>
+        </div>
+
+        <form id="loginForm" class="space-y-5 auth-form">
             <div>
                 <label class="block text-sm font-medium mb-1">Email</label>
-                <input type="email" id="email" required class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Masukkan email">
+                <input type="email" id="loginEmail" required class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Masukkan email">
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Password</label>
-                <input type="password" id="password" required class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Masukkan password">
+                <input type="password" id="loginPassword" required class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Masukkan password">
             </div>
-            
             <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700 transition">
                 Masuk ke Dashboard
             </button>
         </form>
 
-        <div class="mt-6 text-center text-sm">
-            Belum punya akun? <a href="#" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">Daftar sekarang</a>
-        </div>
+        <form id="registerForm" class="space-y-5 auth-form hidden">
+            <div>
+                <label class="block text-sm font-medium mb-1">Nama Lengkap</label>
+                <input type="text" id="registerName" required class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Masukkan nama kamu">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Email</label>
+                <input type="email" id="registerEmail" required class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Masukkan email">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Password</label>
+                <input type="password" id="registerPassword" required minlength="8" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Minimal 8 karakter">
+            </div>
+            <button type="submit" class="w-full bg-green-600 text-white p-3 rounded-lg font-bold hover:bg-green-700 transition">
+                Daftar Akun Baru
+            </button>
+        </form>
+
+        <p id="authMessage" class="mt-4 text-sm hidden"></p>
     </div>
 
     <script>
-        // Simulasi pengalihan ke dashboard saat tombol diklik
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            // Nanti dihubungkan ke API auth di sini
-            window.location.href = 'index.html'; 
+        const tabLogin = document.getElementById('tabLogin');
+        const tabRegister = document.getElementById('tabRegister');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const authMessage = document.getElementById('authMessage');
+
+        function setTab(mode) {
+            const isLogin = mode === 'login';
+            tabLogin.className = isLogin ? 'flex-1 py-2 rounded-lg bg-blue-600 text-white font-semibold' : 'flex-1 py-2 rounded-lg text-gray-700 dark:text-gray-200 font-medium';
+            tabRegister.className = !isLogin ? 'flex-1 py-2 rounded-lg bg-green-600 text-white font-semibold' : 'flex-1 py-2 rounded-lg text-gray-700 dark:text-gray-200 font-medium';
+            loginForm.classList.toggle('hidden', !isLogin);
+            registerForm.classList.toggle('hidden', isLogin);
+            authMessage.classList.add('hidden');
+        }
+
+        async function handleResponse(response) {
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(result.error || 'Permintaan gagal');
+            }
+            return result;
+        }
+
+        tabLogin.addEventListener('click', () => setTab('login'));
+        tabRegister.addEventListener('click', () => setTab('register'));
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            authMessage.textContent = 'Memproses login...';
+            authMessage.className = 'mt-4 text-sm text-gray-500';
+            authMessage.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const result = await handleResponse(response);
+                window.location.href = 'index.html';
+            } catch (error) {
+                authMessage.textContent = error.message;
+                authMessage.className = 'mt-4 text-sm text-red-600';
+                authMessage.classList.remove('hidden');
+            }
         });
+
+        registerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+
+            authMessage.textContent = 'Membuat akun baru...';
+            authMessage.className = 'mt-4 text-sm text-gray-500';
+            authMessage.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                const result = await handleResponse(response);
+                window.location.href = 'index.html';
+            } catch (error) {
+                authMessage.textContent = error.message;
+                authMessage.className = 'mt-4 text-sm text-red-600';
+                authMessage.classList.remove('hidden');
+            }
+        });
+
+        fetch('/api/auth/me', { credentials: 'same-origin' })
+            .then((response) => {
+                if (response.ok) {
+                    window.location.href = 'index.html';
+                }
+            })
+            .catch(() => {});
+
+        setTab('login');
     </script>
 </body>
 </html>
