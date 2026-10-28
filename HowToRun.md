@@ -14,3 +14,22 @@
 ## Setup Frontend
 1. Buka terminal baru, masuk ke folder `front-end`.
 2. (Sesuaikan petunjuknya: apakah pakai `npm run dev` untuk React/Vite, atau cukup buka `index.html` di browser).
+
+## Langkah Menjalankan Aplikasi
+1. Masuk ke direktori projek:
+   ```bash
+   cd back-end
+
+   Install dependensi package:
+
+Bash
+npm install
+Sinkronkan skema database Prisma:
+
+Bash
+npx prisma db push
+Jalankan server aplikasi:
+
+Bash
+npm start
+Akses melalui browser di: http://localhost:3000
