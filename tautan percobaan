@@ -1,0 +1,7 @@
+## 05. Deployment & Tautan Percobaan Online
+
+* **Platform Deployment:** Vercel Cloud Serverless (Production Environment)
+* **Tautan Percobaan (Live Demo):** `https://scheduler-projek.vercel.app`
+* **Catatan Infrastruktur:** 
+  Aplikasi ini di-deploy menggunakan arsitektur cloud serverless (Vercel) untuk memastikan ketersediaan layanan secara *real-time* dan publik tanpa ketergantungan pada perangkat keras fisik lokal. 
+  Seluruh pipeline pengujian fungsional dan *unit test* terminal juga telah divalidasi dengan status **All Passed**.
