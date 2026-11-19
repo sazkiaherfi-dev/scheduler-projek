@@ -1,0 +1,26 @@
+minimal 10 issues
+
+*Pemeriksaan Payload Data Masuk pada Catatan Feynman
+
+*Bug Reset Status Timer Pomodoro saat Refresh Browser
+
+*Kebocoran Status Pengujian pada Suite Unit Test Jest
+
+*Peringatan Keamanan Git: Berkas .env Terbawa ke Staging
+
+*Unhandled Promise Rejection pada Pencatatan Sesi Pomodoro
+
+*Aset Statis Mengembalikan Error 404 pada Build Produksi
+
+*Kerentanan Validasi Kata Sandi Lemah saat Pendaftaran
+
+*Tabel Database Hilang: Error Migrasi Prisma P2021
+
+*Blokade Kebijakan CORS pada Permintaan Fetch Frontend
+
+*HTTP 404 Not Found pada Rute Penghapusan Tugas Dinamis
+
+*Timeout Koneksi Database pada Deployment Vercel
+
+*Authentication Failure: Gagal melakukan proses login / autentikasi pengguna pada environment production
+
