@@ -6,12 +6,34 @@ const prisma = new PrismaClient();
 
 router.use(requireAuth);
 
+// Penyimpanan sementara untuk mode demo di environment read-only (Vercel)
+let demoTasks = [
+    {
+        id: 1,
+        userId: 999999,
+        title: 'Contoh Tugas Kuliah (Demo)',
+        description: 'Pemrograman Web',
+        deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+        status: 'PENDING'
+    }
+];
+let nextDemoTaskId = 2;
+
+function isDemoFallback(req) {
+    return req.isDemo && req.userId === 999999;
+}
+
 // GET: Ambil daftar tugas milik pengguna
 router.get('/', async (req, res) => {
+    if (isDemoFallback(req)) {
+        return res.json(demoTasks);
+    }
+
     try {
         const tasks = await prisma.task.findMany({ where: { userId: req.userId } });
         res.json(tasks);
     } catch (error) {
+        if (req.isDemo) return res.json(demoTasks);
         res.status(500).json({ error: "Gagal mengambil data tugas" });
     }
 });
@@ -34,10 +56,22 @@ router.post('/', async (req, res) => {
     const course = typeof body.course === 'string' ? body.course.trim() : '';
     const subject = typeof body.subject === 'string' ? body.subject.trim() : '';
     const description = typeof body.description === 'string' ? body.description.trim() : '';
+    const matkul = course || subject || 'Umum';
+
+    if (isDemoFallback(req)) {
+        const newTask = {
+            id: nextDemoTaskId++,
+            userId: 999999,
+            title,
+            description: description || matkul,
+            deadline: deadlineDate.toISOString(),
+            status: 'PENDING'
+        };
+        demoTasks.push(newTask);
+        return res.status(201).json(newTask);
+    }
 
     try {
-        const matkul = course || subject || 'Umum';
-
         const newTask = await prisma.task.create({
             data: {
                 userId: req.userId,
@@ -50,6 +84,18 @@ router.post('/', async (req, res) => {
 
         res.status(201).json(newTask);
     } catch (error) {
+        if (req.isDemo) {
+            const newTask = {
+                id: nextDemoTaskId++,
+                userId: req.userId,
+                title,
+                description: description || matkul,
+                deadline: deadlineDate.toISOString(),
+                status: 'PENDING'
+            };
+            demoTasks.push(newTask);
+            return res.status(201).json(newTask);
+        }
         console.error("Error Simpan Task:", error);
         res.status(500).json({ error: "Gagal menyimpan tugas", detail: error.message });
     }
@@ -60,6 +106,15 @@ router.patch('/:id/complete', async (req, res) => {
     const id = Number(req.params.id);
     if (!Number.isInteger(id) || id < 1) {
         return res.status(400).json({ error: 'ID tugas tidak valid' });
+    }
+
+    if (isDemoFallback(req)) {
+        const task = demoTasks.find(t => t.id === id);
+        if (!task) {
+            return res.status(404).json({ error: 'Tugas tidak ditemukan' });
+        }
+        task.status = 'COMPLETED';
+        return res.json(task);
     }
 
     try {
@@ -85,6 +140,15 @@ router.delete('/:id', async (req, res) => {
     const id = Number(req.params.id);
     if (!Number.isInteger(id) || id < 1) {
         return res.status(400).json({ error: 'ID tugas tidak valid' });
+    }
+
+    if (isDemoFallback(req)) {
+        const initialLength = demoTasks.length;
+        demoTasks = demoTasks.filter(t => t.id !== id);
+        if (demoTasks.length === initialLength) {
+            return res.status(404).json({ error: 'Tugas tidak ditemukan' });
+        }
+        return res.json({ message: 'Tugas berhasil dihapus' });
     }
 
     try {
