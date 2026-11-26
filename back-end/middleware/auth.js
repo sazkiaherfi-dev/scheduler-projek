@@ -2,21 +2,23 @@ const crypto = require('crypto');
 
 const SESSION_COOKIE = 'scheduler_session';
 const SESSION_DURATION_SECONDS = 7 * 24 * 60 * 60;
-const sessionSecret = process.env.AUTH_TOKEN_SECRET || crypto.randomBytes(32).toString('hex');
+const sessionSecret = process.env.AUTH_TOKEN_SECRET || 'scheduler-projek-demo-secret-key-2026';
 
 function sign(value) {
     return crypto.createHmac('sha256', sessionSecret).update(value).digest('base64url');
 }
 
-function createSessionToken(userId, now = Date.now()) {
-    const payload = Buffer.from(JSON.stringify({
+function createSessionToken(userId, now = Date.now(), isDemo = false) {
+    const session = {
         userId,
         expiresAt: Math.floor(now / 1000) + SESSION_DURATION_SECONDS
-    })).toString('base64url');
+    };
+    if (isDemo) session.isDemo = true;
+    const payload = Buffer.from(JSON.stringify(session)).toString('base64url');
     return `${payload}.${sign(payload)}`;
 }
 
-function getSessionUserId(req, now = Date.now()) {
+function getSession(req, now = Date.now()) {
     const cookies = req.headers.cookie || '';
     const token = cookies
         .split(';')
@@ -48,14 +50,18 @@ function getSessionUserId(req, now = Date.now()) {
         ) {
             return null;
         }
-        return session.userId;
+        return { userId: session.userId, isDemo: session.isDemo === true };
     } catch (error) {
         return null;
     }
 }
 
-function setSessionCookie(res, userId) {
-    res.cookie(SESSION_COOKIE, createSessionToken(userId), {
+function getSessionUserId(req, now = Date.now()) {
+    return getSession(req, now)?.userId || null;
+}
+
+function setSessionCookie(res, userId, { isDemo = false } = {}) {
+    res.cookie(SESSION_COOKIE, createSessionToken(userId, Date.now(), isDemo), {
         httpOnly: true,
         sameSite: 'lax',
         secure: process.env.NODE_ENV === 'production',
@@ -74,11 +80,12 @@ function clearSessionCookie(res) {
 }
 
 function requireAuth(req, res, next) {
-    const userId = getSessionUserId(req);
-    if (!userId) {
+    const session = getSession(req);
+    if (!session) {
         return res.status(401).json({ error: 'Silakan masuk terlebih dahulu' });
     }
-    req.userId = userId;
+    req.userId = session.userId;
+    req.isDemo = session.isDemo;
     next();
 }
 

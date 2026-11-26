@@ -36,6 +36,17 @@
             </button>
         </form>
 
+        <div id="demoEntry" class="mt-4">
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+                <span class="h-px flex-1 bg-gray-200 dark:bg-gray-600"></span>
+                <span>atau</span>
+                <span class="h-px flex-1 bg-gray-200 dark:bg-gray-600"></span>
+            </div>
+            <button type="button" id="demoButton" class="mt-4 w-full border border-blue-600 text-blue-600 dark:text-blue-400 p-3 rounded-lg font-bold hover:bg-blue-50 dark:hover:bg-gray-700 transition">
+                Masuk sebagai Demo
+            </button>
+        </div>
+
         <form id="registerForm" class="space-y-5 auth-form hidden">
             <div>
                 <label class="block text-sm font-medium mb-1">Nama Lengkap</label>
@@ -63,6 +74,8 @@
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
         const authMessage = document.getElementById('authMessage');
+        const demoEntry = document.getElementById('demoEntry');
+        const demoButton = document.getElementById('demoButton');
 
         function setTab(mode) {
             const isLogin = mode === 'login';
@@ -70,6 +83,7 @@
             tabRegister.className = !isLogin ? 'flex-1 py-2 rounded-lg bg-green-600 text-white font-semibold' : 'flex-1 py-2 rounded-lg text-gray-700 dark:text-gray-200 font-medium';
             loginForm.classList.toggle('hidden', !isLogin);
             registerForm.classList.toggle('hidden', isLogin);
+            demoEntry.classList.toggle('hidden', !isLogin);
             authMessage.classList.add('hidden');
         }
 
@@ -83,6 +97,26 @@
 
         tabLogin.addEventListener('click', () => setTab('login'));
         tabRegister.addEventListener('click', () => setTab('register'));
+
+        demoButton.addEventListener('click', async () => {
+            demoButton.disabled = true;
+            demoButton.textContent = 'Menyiapkan demo...';
+            authMessage.textContent = 'Membuka ruang demo...';
+            authMessage.className = 'mt-4 text-sm text-gray-500';
+            authMessage.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/api/auth/demo', { method: 'POST' });
+                await handleResponse(response);
+                window.location.href = 'index.html';
+            } catch (error) {
+                authMessage.textContent = error.message;
+                authMessage.className = 'mt-4 text-sm text-red-600';
+                authMessage.classList.remove('hidden');
+                demoButton.disabled = false;
+                demoButton.textContent = 'Masuk sebagai Demo';
+            }
+        });
 
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
