@@ -1,57 +1,85 @@
+const crypto = require('crypto');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const { PrismaClient } = require('@prisma/client');
 require('dotenv').config();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Melayani file statis Front-End dari folder utama (back-end)
-app.use(express.static(__dirname));
-
-// Import Routes 
 const scheduleRoutes = require('./routes/schedules');
 const taskRoutes = require('./routes/tasks');
 const authRoutes = require('./routes/auth');
-const { getSessionUserId } = require('./middleware/auth');
+const { getSessionUserId, setSessionCookie } = require('./middleware/auth');
 
-// Daftarkan API Routes
+const app = express();
+const prisma = new PrismaClient();
+const PORT = process.env.PORT || 3000;
+
+// Halaman utama yang langsung mendapatkan sesi tamu otomatis jika belum login
+const GUEST_ENABLED_PAGES = ['/', '/index.html', '/study-space.html'];
+
+// Folder/file internal backend yang tidak boleh diakses langsung lewat browser
+const BLOCKED_PATHS = /^\/(\.env|prisma|routes|middleware|test|node_modules|package(-lock)?\.json|docker-compose\.yml|vercel\.json|index\.js)/i;
+
+// Middleware dasar
+app.use(cors());
+app.use(express.json());
+
+// 1. Blokir akses langsung ke file-file internal backend
+app.use((req, res, next) => {
+  if (BLOCKED_PATHS.test(req.path)) {
+    return res.status(403).json({ error: 'Akses ditolak' });
+  }
+  next();
+});
+
+// 2. Otomatis buatkan sesi tamu (demo) jika membuka halaman utama tanpa login
+app.use(async (req, res, next) => {
+  if (req.method === 'GET' && GUEST_ENABLED_PAGES.includes(req.path)) {
+    const existingUserId = getSessionUserId(req);
+
+    if (!existingUserId) {
+      try {
+        const guestUser = await prisma.user.create({
+          data: {
+            name: 'Pengguna Tamu',
+            email: `guest-${crypto.randomUUID()}@demo.scheduler.local`,
+            password: crypto.randomBytes(64).toString('hex')
+          }
+        });
+
+        setSessionCookie(res, guestUser.id, { isDemo: true });
+      } catch (error) {
+        console.error('Gagal membuat sesi tamu otomatis:', error);
+        return res.redirect('/login.html');
+      }
+    }
+  }
+  next();
+});
+
+// 3. Melayani file statis Front-End
+app.use(express.static(__dirname));
+
+// 4. Daftarkan API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/tasks', taskRoutes);
 
-// Keep unknown API requests in JSON format instead of returning the HTML page.
+// 5. Pastikan endpoint API yang tidak terdaftar selalu membalas JSON 404
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Endpoint API tidak ditemukan' });
 });
 
-app.use((req, res, next) => {
-  const protectedPages = ['/', '/index.html', '/study-space.html'];
-  if (req.method === 'GET' && protectedPages.includes(req.path) && !getSessionUserId(req)) {
-    return res.redirect('/login.html');
-  }
-
-  next();
-});
-
-// Fallback Route untuk menyajikan halaman utama Front-End langsung dari folder utama
+// 6. Fallback Route untuk halaman HTML
 app.get(/.*/, (req, res) => {
-  if (req.path === '/login.html') {
-    return res.sendFile(path.join(__dirname, 'login.html'));
-  }
+  const targetFile = req.path === '/' ? 'index.html' : req.path;
+  const filePath = path.join(__dirname, targetFile);
 
-  if (req.path === '/' || req.path === '/index.html' || req.path === '/study-space.html') {
-    const userId = getSessionUserId(req);
-    if (!userId) {
-      return res.redirect('/login.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(404).send('Halaman tidak ditemukan');
     }
-  }
-
-  res.sendFile(path.join(__dirname, req.path === '/' ? 'index.html' : req.path));
+  });
 });
 
 if (require.main === module) {

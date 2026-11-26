@@ -55,6 +55,7 @@ async function loadCurrentUser() {
 
         const result = await response.json();
         const user = result.user || {};
+        user.isDemo = result.isDemo === true;
         currentUser = user;
         const firstName = (user.name || 'User').trim();
         const initial = firstName.charAt(0).toUpperCase();
@@ -64,6 +65,8 @@ async function loadCurrentUser() {
         if (profileNameDetail) profileNameDetail.textContent = user.name || '-';
         if (profileEmail) profileEmail.textContent = user.email || '-';
         if (profileInitial) profileInitial.textContent = initial || 'U';
+        if (editProfileButton) editProfileButton.classList.toggle('hidden', user.isDemo);
+        if (user.isDemo && profileEmail) profileEmail.textContent = 'Mode demo — data terpisah';
         populateProfileForm(user);
     } catch (error) {
         window.location.href = '/login.html';
