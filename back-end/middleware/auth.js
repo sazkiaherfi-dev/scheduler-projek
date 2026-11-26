@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const SESSION_COOKIE = 'scheduler_session';
 const SESSION_DURATION_SECONDS = 7 * 24 * 60 * 60;
-const sessionSecret = process.env.AUTH_TOKEN_SECRET || crypto.randomBytes(32).toString('hex');
+const sessionSecret = process.env.AUTH_TOKEN_SECRET || 'scheduler-projek-demo-secret-key-2026';
 
 function sign(value) {
     return crypto.createHmac('sha256', sessionSecret).update(value).digest('base64url');

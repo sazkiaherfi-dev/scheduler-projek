@@ -56,19 +56,29 @@ function validateUserInput(body = {}, { requirePassword = true } = {}) {
     return { data: { name, email, password } };
 }
 
-// Fungsi pembuatan sesi demo terpusat (dipakai oleh route /demo maupun auto-session di index.js)
+// Fungsi pembuatan sesi demo terpusat (dengan fallback tanpa DB untuk lingkungan read-only seperti Vercel)
 async function createDemoSession(res) {
-    const user = await prisma.user.create({
-        data: {
-            name: 'Pengguna Demo',
-            email: `demo-${crypto.randomUUID()}@demo.scheduler.local`,
-            password: crypto.randomBytes(64).toString('hex')
-        },
-        select: USER_PUBLIC_SELECT
-    });
+    try {
+        const user = await prisma.user.create({
+            data: {
+                name: 'Pengguna Demo',
+                email: `demo-${crypto.randomUUID()}@demo.scheduler.local`,
+                password: crypto.randomBytes(64).toString('hex')
+            },
+            select: USER_PUBLIC_SELECT
+        });
 
-    setSessionCookie(res, user.id, { isDemo: true });
-    return user;
+        setSessionCookie(res, user.id, { isDemo: true });
+        return user;
+    } catch (error) {
+        const fallbackDemoUser = {
+            id: 999999,
+            name: 'Pengguna Demo',
+            email: 'demo@scheduler.local'
+        };
+        setSessionCookie(res, fallbackDemoUser.id, { isDemo: true });
+        return fallbackDemoUser;
+    }
 }
 
 // --- Auth Routes ---
@@ -143,6 +153,13 @@ router.post('/logout', (req, res) => {
 });
 
 router.get('/me', requireAuth, async (req, res) => {
+    if (req.isDemo && req.userId === 999999) {
+        return res.json({
+            user: { id: 999999, name: 'Pengguna Demo', email: 'demo@scheduler.local' },
+            isDemo: true
+        });
+    }
+
     try {
         const user = await prisma.user.findUnique({
             where: { id: req.userId },
@@ -157,6 +174,10 @@ router.get('/me', requireAuth, async (req, res) => {
 
         res.json({ user, isDemo: req.isDemo });
     } catch (error) {
+        if (req.isDemo) {
+            const demoUser = await createDemoSession(res);
+            return res.json({ user: demoUser, isDemo: true });
+        }
         console.error('Gagal mengambil profil pengguna:', error);
         res.status(500).json({ error: 'Gagal memuat profil pengguna' });
     }
